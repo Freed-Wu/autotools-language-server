@@ -66,7 +66,7 @@ def get_document(
 
 
 class AutoconfLanguageServer(LanguageServer):
-    r"""Autoconflanguageserver."""
+    r"""Autoconf language server."""
 
     def __init__(self, *args: Any) -> None:
         r"""Init.
@@ -113,6 +113,10 @@ class AutoconfLanguageServer(LanguageServer):
             :type params: CompletionParams
             :rtype: CompletionList
             """
+            word = self._cursor_word(
+                params.text_document.uri, params.position, False
+            )
+            token = "" if word is None else word[0]
             items = [
                 CompletionItem(
                     label=x,
@@ -121,6 +125,7 @@ class AutoconfLanguageServer(LanguageServer):
                     insert_text=x,
                 )
                 for x in self.document
+                if x.startswith(token)
             ]
             return CompletionList(is_incomplete=False, items=items)
 
