@@ -3,7 +3,7 @@
 ## [AUR](https://aur.archlinux.org/packages/autoconf-language-server)
 
 ```sh
-yay -S autoconf-language-server
+yay -S python-autoconf-language-server
 ```
 
 ## [NUR](https://nur.nix-community.org/repos/Freed-Wu)
