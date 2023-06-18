@@ -1,12 +1,10 @@
 r"""Api
 =======
 """
-import json
 import os
 from gzip import decompress
-from typing import Literal
 
-from platformdirs import site_data_dir, user_cache_dir
+from platformdirs import site_data_dir
 
 START = " -- Macro: "
 
@@ -85,38 +83,3 @@ def init_document() -> dict[str, str]:
             macros, macro, macro2, lines = reset(macros, macro, macro2, lines)
         lastline = line
     return macros
-
-
-def get_document(
-    method: Literal["builtin", "cache", "system"] = "builtin"
-) -> dict[str, str]:
-    r"""Get document. ``builtin`` will use builtin autoconf.json. ``cache``
-    will generate a cache from ``${XDG_CACHE_DIRS:-/usr/share}
-    /info/autoconf.info.gz``. ``system`` is same as ``cache`` except it doesn't
-    generate cache. Some distribution's autoconf doesn't contain textinfo. So
-    we use ``builtin`` as default.
-
-    :param method:
-    :type method: Literal["builtin", "cache", "system"]
-    :rtype: dict[str, str]
-    """
-    if method == "builtin":
-        file = os.path.join(
-            os.path.join(
-                os.path.join(os.path.dirname(__file__), "assets"), "json"
-            ),
-            "autoconf.json",
-        )
-        with open(file, "r") as f:
-            document = json.load(f)
-    elif method == "cache":
-        if not os.path.exists(user_cache_dir("autoconf.json")):
-            document = init_document()
-            with open(user_cache_dir("autoconf.json"), "w") as f:
-                json.dump(document, f)
-        else:
-            with open(user_cache_dir("autoconf.json"), "r") as f:
-                document = json.load(f)
-    else:
-        document = init_document()
-    return document

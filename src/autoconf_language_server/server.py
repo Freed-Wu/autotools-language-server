@@ -1,24 +1,19 @@
 r"""Server
 ==========
 """
+import json
+import os
 import re
-from typing import Any, Tuple
+from typing import Any, Literal, Tuple
 
 from lsprotocol.types import (
-    ALL_TYPES_MAP,
     INITIALIZE,
-    INITIALIZED,
     TEXT_DOCUMENT_COMPLETION,
-    TEXT_DOCUMENT_DID_SAVE,
-    TEXT_DOCUMENT_FORMATTING,
     TEXT_DOCUMENT_HOVER,
     CompletionItem,
     CompletionItemKind,
     CompletionList,
-    CompletionOptions,
     CompletionParams,
-    CompletionTriggerKind,
-    DocumentFormattingParams,
     Hover,
     InitializeParams,
     MarkupContent,
@@ -26,12 +21,48 @@ from lsprotocol.types import (
     Position,
     Range,
     TextDocumentPositionParams,
-    TextDocumentSaveRegistrationOptions,
-    TextEdit,
 )
+from platformdirs import user_cache_dir
 from pygls.server import LanguageServer
 
-from .api import get_document
+
+def get_document(
+    method: Literal["builtin", "cache", "system"] = "builtin"
+) -> dict[str, str]:
+    r"""Get document. ``builtin`` will use builtin autoconf.json. ``cache``
+    will generate a cache from ``${XDG_CACHE_DIRS:-/usr/share}
+    /info/autoconf.info.gz``. ``system`` is same as ``cache`` except it doesn't
+    generate cache. Some distribution's autoconf doesn't contain textinfo. So
+    we use ``builtin`` as default.
+
+    :param method:
+    :type method: Literal["builtin", "cache", "system"]
+    :rtype: dict[str, str]
+    """
+    if method == "builtin":
+        file = os.path.join(
+            os.path.join(
+                os.path.join(os.path.dirname(__file__), "assets"), "json"
+            ),
+            "autoconf.json",
+        )
+        with open(file, "r") as f:
+            document = json.load(f)
+    elif method == "cache":
+        from .api import init_document
+
+        if not os.path.exists(user_cache_dir("autoconf.json")):
+            document = init_document()
+            with open(user_cache_dir("autoconf.json"), "w") as f:
+                json.dump(document, f)
+        else:
+            with open(user_cache_dir("autoconf.json"), "r") as f:
+                document = json.load(f)
+    else:
+        from .api import init_document
+
+        document = init_document()
+    return document
 
 
 class AutoconfLanguageServer(LanguageServer):
