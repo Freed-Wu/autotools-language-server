@@ -1,4 +1,4 @@
-r"""Test api"""
+r"""Test server"""
 from autoconf_language_server.server import get_document
 
 

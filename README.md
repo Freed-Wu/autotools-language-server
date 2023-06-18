@@ -46,52 +46,9 @@ Language server for [autoconf](https://www.gnu.org/software/autoconf).
 
 ![completion](https://github.com/SchemaStore/schemastore/assets/32936898/fa0c523d-cb51-4870-92a4-07d64c624221)
 
-## Usage
-
-### vim
-
-Install [coc.nvim](https://github.com/neoclide/coc.nvim):
-
-```json
-{
-  "languageserver": {
-    "autoconf": {
-      "command": "autoconf-language-server",
-      "filetypes": [
-        "config"
-      ],
-      "initializationOptions": {
-        "method": "builtin"
-      }
-    }
-  }
-}
-```
-
-### neovim
-
-Install [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig):
-
-```vim
-if executable('autoconf-language-server')
-  augroup lsp
-    autocmd!
-    autocmd User lsp_setup call lsp#register_server({
-          \ 'name': 'autoconf',
-          \ 'cmd': {server_info->['autoconf-language-server']},
-          \ 'whitelist': ['config'],
-          \ 'initialization_options': {
-          \   'method': 'builtin',
-          \ },
-          \ })
-  augroup END
-endif
-```
-
-## Customization
-
-See
-<https://autoconf-language-server.readthedocs.io/en/latest/api/autoconf-language-server.html#autoconf_language_server.server.get_document>.
+Read
+[![readthedocs](https://shields.io/readthedocs/autoconf-language-server)](https://autoconf-language-server.readthedocs.io)
+to know more.
 
 ## Similar Projects
 
