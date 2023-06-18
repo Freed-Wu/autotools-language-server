@@ -5,9 +5,11 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from contextlib import suppress
 from datetime import datetime
 
+from . import __name__ as NAME
 from . import __version__
 
-VERSION = rf"""autoconf_language_server {__version__}
+NAME = NAME.replace("_", "-")
+VERSION = rf"""{NAME} {__version__}
 Copyright (C) {datetime.now().year}
 Written by Wu Zhenyu
 """
@@ -35,10 +37,9 @@ def main():
     parser = get_parser()
     parser.parse_args()
 
-    from . import __name__
     from .server import AutoconfLanguageServer
 
-    AutoconfLanguageServer(__name__.replace("_", "-"), __version__).start_io()
+    AutoconfLanguageServer(NAME, __version__).start_io()
 
 
 if __name__ == "__main__":
