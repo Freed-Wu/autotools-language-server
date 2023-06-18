@@ -1,5 +1,5 @@
 r"""Test api"""
-from autoconf_language_server.api import get_document
+from autoconf_language_server.server import get_document
 
 
 class Test:

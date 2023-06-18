@@ -91,7 +91,7 @@ endif
 ## Customization
 
 See
-<https://autoconf-language-server.readthedocs.io/en/latest/api/autoconf-language-server.html#autoconf_language_server.api.get_document>.
+<https://autoconf-language-server.readthedocs.io/en/latest/api/autoconf-language-server.html#autoconf_language_server.server.get_document>.
 
 ## Similar Projects
 
