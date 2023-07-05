@@ -30,10 +30,12 @@ def get_document(
     method: Literal["builtin", "cache", "system"] = "builtin"
 ) -> dict[str, str]:
     r"""Get document. ``builtin`` will use builtin autoconf.json. ``cache``
-    will generate a cache from ``${XDG_CACHE_DIRS:-/usr/share}
-    /info/autoconf.info.gz``. ``system`` is same as ``cache`` except it doesn't
-    generate cache. Some distribution's autoconf doesn't contain textinfo. So
-    we use ``builtin`` as default.
+    will generate a cache from
+    ``${XDG_CACHE_DIRS:-/usr/share}/info/autoconf.info.gz``,
+    ``${XDG_CACHE_DIRS:-/usr/share}/info/automake.info-1.gz``.
+    ``system`` is same as ``cache`` except it doesn't generate cache. Some
+    distribution's autoconf doesn't contain textinfo. So we use ``builtin`` as
+    default.
 
     :param method:
     :type method: Literal["builtin", "cache", "system"]
