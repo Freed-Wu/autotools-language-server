@@ -11,8 +11,7 @@
         {
           formatter = nixpkgs-fmt;
           packages.default = buildPythonApplication rec {
-            pname = "autoconf-language-server";
-            version = "";
+            name = "autoconf-language-server";
             src = self;
             format = "pyproject";
             disabled = pythonOlder "3.6";
