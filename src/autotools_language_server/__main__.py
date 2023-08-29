@@ -37,9 +37,9 @@ def main():
     parser = get_parser()
     parser.parse_args()
 
-    from .server import AutoconfLanguageServer
+    from .server import AutotoolsLanguageServer
 
-    AutoconfLanguageServer(NAME, __version__).start_io()
+    AutotoolsLanguageServer(NAME, __version__).start_io()
 
 
 if __name__ == "__main__":

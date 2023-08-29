@@ -2,8 +2,8 @@ r"""Configure the Sphinx documentation builder.
 
 https://www.sphinx-doc.org/en/master/usage/configuration.html
 """
-from autoconf_language_server import __version__ as version  # type: ignore
-from autoconf_language_server._metainfo import (  # type: ignore
+from autotools_language_server import __version__ as version  # type: ignore
+from autotools_language_server._metainfo import (  # type: ignore
     author,
     copyright,
     project,

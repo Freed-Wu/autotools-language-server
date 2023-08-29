@@ -11,7 +11,7 @@
         {
           formatter = nixpkgs-fmt;
           packages.default = buildPythonApplication rec {
-            name = "autoconf-language-server";
+            name = "autotools-language-server";
             src = self;
             format = "pyproject";
             disabled = pythonOlder "3.6";
@@ -21,7 +21,7 @@
               setuptools-generate
             ];
             pythonImportsCheck = [
-              "autoconf_language_server"
+              "autotools_language_server"
             ];
           };
         }

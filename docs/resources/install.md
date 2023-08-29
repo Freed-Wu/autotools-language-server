@@ -1,9 +1,9 @@
 # Install
 
-## [AUR](https://aur.archlinux.org/packages/autoconf-language-server)
+## [AUR](https://aur.archlinux.org/packages/autotools-language-server)
 
 ```sh
-yay -S python-autoconf-language-server
+yay -S python-autotools-language-server
 ```
 
 ## [NUR](https://nur.nix-community.org/repos/Freed-Wu)
@@ -25,7 +25,7 @@ yay -S python-autoconf-language-server
       (
         python3.withPackages (
           p: with p; [
-            nur.repos.Freed-Wu.autoconf-language-server
+            nur.repos.Freed-Wu.autotools-language-server
           ]
         )
       )
@@ -35,19 +35,19 @@ yay -S python-autoconf-language-server
 ## [Nix](https://nixos.org)
 
 ```sh
-nix shell github:Freed-Wu/autoconf-language-server
+nix shell github:Freed-Wu/autotools-language-server
 ```
 
 Run without installation:
 
 ```sh
-nix run github:Freed-Wu/autoconf-language-server -- --help
+nix run github:Freed-Wu/autotools-language-server -- --help
 ```
 
-## [PYPI](https://pypi.org/project/autoconf-language-server)
+## [PYPI](https://pypi.org/project/autotools-language-server)
 
 ```sh
-pip install autoconf-language-server
+pip install autotools-language-server
 ```
 
 See [requirements](requirements) to know `extra_requires`.
