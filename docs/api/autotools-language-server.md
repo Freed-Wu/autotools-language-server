@@ -1,4 +1,4 @@
-# autoconf-language-server
+# autotools-language-server
 
 ````{eval-rst}
 ```{eval-sh}

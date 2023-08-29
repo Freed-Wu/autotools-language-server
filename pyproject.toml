@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
 [project]
-name = "autoconf-language-server"
-description = "autoconf language server"
+name = "autotools-language-server"
+description = "autotools language server"
 readme = "README.md"
 requires-python = ">= 3.7"
-keywords = ["autoconf", "language server"]
+keywords = ["autotools", "language server"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
@@ -38,21 +38,21 @@ email = "wuzhenyu@ustc.edu"
 text = "GPL v3"
 
 [project.urls]
-Homepage = "https://autoconf-language-server.readthedocs.io"
-Download = "https://github.com/Freed-Wu/autoconf-language-server/releases"
-"Bug Report" = "https://github.com/Freed-Wu/autoconf-language-server/issues"
-Source = "https://github.com/Freed-Wu/autoconf-language-server"
+Homepage = "https://autotools-language-server.readthedocs.io"
+Download = "https://github.com/Freed-Wu/autotools-language-server/releases"
+"Bug Report" = "https://github.com/Freed-Wu/autotools-language-server/issues"
+Source = "https://github.com/Freed-Wu/autotools-language-server"
 
 [project.scripts]
-autoconf-language-server = "autoconf_language_server.__main__:main"
+autotools-language-server = "autotools_language_server.__main__:main"
 
 [tool.setuptools.package-data]
-autoconf_language_server = ["py.typed", "assets/**"]
+autotools_language_server = ["py.typed", "assets/**"]
 
 [tool.setuptools.data-files]
-"share/man/man1" = ["sdist/autoconf-language-server.1"]
-"share/bash-completion/completions" = ["sdist/autoconf-language-server"]
-"share/zsh/site-functions" = ["sdist/_autoconf-language-server"]
+"share/man/man1" = ["sdist/autotools-language-server.1"]
+"share/bash-completion/completions" = ["sdist/autotools-language-server"]
+"share/zsh/site-functions" = ["sdist/_autotools-language-server"]
 
 [tool.setuptools.dynamic.dependencies]
 file = "requirements.txt"
@@ -63,10 +63,10 @@ file = "requirements/dev.txt"
 # end: scripts/update-pyproject.toml.pl
 
 [tool.setuptools_scm]
-write_to = "src/autoconf_language_server/_version.py"
+write_to = "src/autotools_language_server/_version.py"
 
 [tool.setuptools-generate]
-write-to = "src/autoconf_language_server/_metainfo.py"
+write-to = "src/autotools_language_server/_metainfo.py"
 
 [tool.mdformat]
 number = true

@@ -1,7 +1,7 @@
 # Configure
 
 See customization in
-<https://autoconf-language-server.readthedocs.io/en/latest/api/autoconf-language-server.html#autoconf_language_server.server.get_document>.
+<https://autotools-language-server.readthedocs.io/en/latest/api/autotools-language-server.html#autotools_language_server.server.get_document>.
 
 ## (Neo)[Vim](https://www.vim.org)
 
@@ -10,10 +10,12 @@ See customization in
 ```json
 {
   "languageserver": {
-    "autoconf": {
-      "command": "autoconf-language-server",
+    "autotools": {
+      "command": "autotools-language-server",
       "filetypes": [
-        "config"
+        "config",
+        "make",
+        "automake"
       ],
       "initializationOptions": {
         "method": "builtin"
@@ -26,13 +28,13 @@ See customization in
 ### [vim-lsp](https://github.com/prabirshrestha/vim-lsp)
 
 ```vim
-if executable('autoconf-language-server')
+if executable('autotools-language-server')
   augroup lsp
     autocmd!
     autocmd User lsp_setup call lsp#register_server({
-          \ 'name': 'autoconf',
-          \ 'cmd': {server_info->['autoconf-language-server']},
-          \ 'whitelist': ['config'],
+          \ 'name': 'autotools',
+          \ 'cmd': {server_info->['autotools-language-server']},
+          \ 'whitelist': ['config', 'make', 'automake'],
           \ 'initialization_options': {
           \   'method': 'builtin',
           \ },
@@ -45,11 +47,11 @@ endif
 
 ```lua
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
-  pattern = { "configure.ac" },
+  pattern = { "configure.ac", "Makefile*", "*.mk" },
   callback = function()
     vim.lsp.start({
-      name = "autoconf",
-      cmd = { "autoconf-language-server" }
+      name = "autotools",
+      cmd = { "autotools-language-server" }
     })
   end,
 })
@@ -60,9 +62,9 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 ```elisp
 (make-lsp-client :new-connection
 (lsp-stdio-connection
-  `(,(executable-find "autoconf-language-server")))
-  :activation-fn (lsp-activate-on "configure.ac")
-  :server-id "autoconf")))
+  `(,(executable-find "autotools-language-server")))
+  :activation-fn (lsp-activate-on "configure.ac" "Makefile*" "*.mk")
+  :server-id "autotools")))
 ```
 
 ## [Sublime](https://www.sublimetext.com)
@@ -70,12 +72,12 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 ```json
 {
   "clients": {
-    "autoconf": {
+    "autotools": {
       "command": [
-        "autoconf-language-server"
+        "autotools-language-server"
       ],
       "enabled": true,
-      "selector": "source.autoconf"
+      "selector": "source.autotools"
     }
   }
 }

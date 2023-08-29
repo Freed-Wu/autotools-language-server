@@ -26,39 +26,59 @@ from platformdirs import user_cache_dir
 from pygls.server import LanguageServer
 
 
+def check_extension(
+    uri: str,
+) -> Literal["config", "make", ""]:
+    r"""Check extension.
+
+    :param uri:
+    :type uri: str
+    :rtype: Literal["config", "make", ""]
+    """
+    if (
+        uri.split(os.path.extsep)[-1] in ["mk"]
+        or os.path.basename(uri).split(os.path.extsep)[0] == "Makefile"
+    ):
+        return "make"
+    if os.path.basename(uri) == "configure.ac":
+        return "config"
+    return ""
+
+
 def get_document(
     method: Literal["builtin", "cache", "system"] = "builtin"
-) -> dict[str, str]:
-    r"""Get document. ``builtin`` will use builtin autoconf.json. ``cache``
+) -> dict[str, tuple[str, str]]:
+    r"""Get document. ``builtin`` will use builtin autotools.json. ``cache``
     will generate a cache from
     ``${XDG_CACHE_DIRS:-/usr/share}/info/autoconf.info.gz``,
-    ``${XDG_CACHE_DIRS:-/usr/share}/info/automake.info-1.gz``.
+    ``${XDG_CACHE_DIRS:-/usr/share}/info/automake.info-1.gz``,
+    ``${XDG_CACHE_DIRS:-/usr/share}/info/make.info-2.gz``.
     ``system`` is same as ``cache`` except it doesn't generate cache. Some
-    distribution's autoconf doesn't contain textinfo. So we use ``builtin`` as
+    distribution's autotools doesn't contain textinfo. So we use ``builtin`` as
     default.
 
     :param method:
     :type method: Literal["builtin", "cache", "system"]
-    :rtype: dict[str, str]
+    :rtype: dict[str, tuple[str, str]]
     """
     if method == "builtin":
         file = os.path.join(
             os.path.join(
                 os.path.join(os.path.dirname(__file__), "assets"), "json"
             ),
-            "autoconf.json",
+            "autotools.json",
         )
         with open(file, "r") as f:
             document = json.load(f)
     elif method == "cache":
         from .api import init_document
 
-        if not os.path.exists(user_cache_dir("autoconf.json")):
+        if not os.path.exists(user_cache_dir("autotools.json")):
             document = init_document()
-            with open(user_cache_dir("autoconf.json"), "w") as f:
+            with open(user_cache_dir("autotools.json"), "w") as f:
                 json.dump(document, f)
         else:
-            with open(user_cache_dir("autoconf.json"), "r") as f:
+            with open(user_cache_dir("autotools.json"), "r") as f:
                 document = json.load(f)
     else:
         from .api import init_document
@@ -67,8 +87,8 @@ def get_document(
     return document
 
 
-class AutoconfLanguageServer(LanguageServer):
-    r"""Autoconf language server."""
+class AutotoolsLanguageServer(LanguageServer):
+    r"""Autotools language server."""
 
     def __init__(self, *args: Any) -> None:
         r"""Init.
@@ -94,16 +114,20 @@ class AutoconfLanguageServer(LanguageServer):
             :type params: TextDocumentPositionParams
             :rtype: Hover | None
             """
+            if not check_extension(params.text_document.uri):
+                return None
             word = self._cursor_word(
                 params.text_document.uri, params.position, True
             )
             if not word:
                 return None
-            doc = self.document.get(word[0])
-            if not doc:
+            result = self.document.get(word[0])
+            if not result:
                 return None
             return Hover(
-                contents=MarkupContent(kind=MarkupKind.PlainText, value=doc),
+                contents=MarkupContent(
+                    kind=MarkupKind.PlainText, value=result[0]
+                ),
                 range=word[1],
             )
 
@@ -115,6 +139,8 @@ class AutoconfLanguageServer(LanguageServer):
             :type params: CompletionParams
             :rtype: CompletionList
             """
+            if not check_extension(params.text_document.uri):
+                return CompletionList(is_incomplete=False, items=[])
             word = self._cursor_word(
                 params.text_document.uri, params.position, False
             )
@@ -123,11 +149,13 @@ class AutoconfLanguageServer(LanguageServer):
                 CompletionItem(
                     label=x,
                     kind=CompletionItemKind.Function,
-                    documentation=self.document[x],
+                    documentation=self.document[x][0],
                     insert_text=x,
                 )
                 for x in self.document
                 if x.startswith(token)
+                and self.document[x][1]
+                == check_extension(params.text_document.uri)
             ]
             return CompletionList(is_incomplete=False, items=items)
 
@@ -160,7 +188,7 @@ class AutoconfLanguageServer(LanguageServer):
         """
         line = self._cursor_line(uri, position)
         cursor = position.character
-        for m in re.finditer(r"\w+", line):
+        for m in re.finditer(r"[^$() ]+", line):
             end = m.end() if include_all else cursor
             if m.start() <= cursor <= m.end():
                 word = (
