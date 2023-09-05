@@ -2,3 +2,4 @@
 
 platformdirs
 pygls
+tree-sitter
