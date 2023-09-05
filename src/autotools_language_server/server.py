@@ -5,15 +5,21 @@ import json
 import os
 import re
 from typing import Any, Literal, Tuple
+from urllib.parse import unquote, urlparse
 
 from lsprotocol.types import (
     INITIALIZE,
     TEXT_DOCUMENT_COMPLETION,
+    TEXT_DOCUMENT_DID_CHANGE,
+    TEXT_DOCUMENT_DID_OPEN,
     TEXT_DOCUMENT_HOVER,
     CompletionItem,
     CompletionItemKind,
     CompletionList,
     CompletionParams,
+    Diagnostic,
+    DiagnosticSeverity,
+    DidChangeTextDocumentParams,
     Hover,
     InitializeParams,
     MarkupContent,
@@ -25,22 +31,25 @@ from lsprotocol.types import (
 from platformdirs import user_cache_dir
 from pygls.server import LanguageServer
 
+from ._tree_sitter import get_parser
+from .diagnostics import diagnostic
+
 
 def check_extension(
-    uri: str,
+    path: str,
 ) -> Literal["config", "make", ""]:
     r"""Check extension.
 
-    :param uri:
-    :type uri: str
+    :param path:
+    :type path: str
     :rtype: Literal["config", "make", ""]
     """
     if (
-        uri.split(os.path.extsep)[-1] in ["mk"]
-        or os.path.basename(uri).split(os.path.extsep)[0] == "Makefile"
+        path.split(os.path.extsep)[-1] in ["mk"]
+        or os.path.basename(path).split(os.path.extsep)[0] == "Makefile"
     ):
         return "make"
-    if os.path.basename(uri) == "configure.ac":
+    if os.path.basename(path) == "configure.ac":
         return "config"
     return ""
 
@@ -99,6 +108,8 @@ class AutotoolsLanguageServer(LanguageServer):
         """
         super().__init__(*args)
         self.document = {}
+        self.parser = get_parser()
+        self.tree = self.parser.parse(b"")
 
         @self.feature(INITIALIZE)
         def initialize(params: InitializeParams) -> None:
@@ -114,7 +125,9 @@ class AutotoolsLanguageServer(LanguageServer):
             :type params: TextDocumentPositionParams
             :rtype: Hover | None
             """
-            if not check_extension(params.text_document.uri):
+            if not check_extension(
+                unquote(urlparse(params.text_document.uri).path)
+            ):
                 return None
             word = self._cursor_word(
                 params.text_document.uri, params.position, True
@@ -139,7 +152,9 @@ class AutotoolsLanguageServer(LanguageServer):
             :type params: CompletionParams
             :rtype: CompletionList
             """
-            if not check_extension(params.text_document.uri):
+            if not check_extension(
+                unquote(urlparse(params.text_document.uri).path)
+            ):
                 return CompletionList(is_incomplete=False, items=[])
             word = self._cursor_word(
                 params.text_document.uri, params.position, False
@@ -155,9 +170,49 @@ class AutotoolsLanguageServer(LanguageServer):
                 for x in self.document
                 if x.startswith(token)
                 and self.document[x][1]
-                == check_extension(params.text_document.uri)
+                == check_extension(
+                    unquote(urlparse(params.text_document.uri).path)
+                )
             ]
             return CompletionList(is_incomplete=False, items=items)
+
+        @self.feature(TEXT_DOCUMENT_DID_OPEN)
+        @self.feature(TEXT_DOCUMENT_DID_CHANGE)
+        def did_change(params: DidChangeTextDocumentParams) -> None:
+            r"""Did change.
+
+            :param params:
+            :type params: DidChangeTextDocumentParams
+            :rtype: None
+            """
+            if (
+                check_extension(
+                    unquote(urlparse(params.text_document.uri).path)
+                )
+                != "make"
+            ):
+                return None
+            doc = self.workspace.get_document(params.text_document.uri)
+            source = doc.source
+            self.tree = self.parser.parse(bytes(source, "utf-8"))
+            diagnostics = [
+                Diagnostic(
+                    range=Range(
+                        Position(node.start_point[0], node.start_point[1]),
+                        Position(node.end_point[0], node.end_point[1]),
+                    ),
+                    message=message,
+                    severity=getattr(DiagnosticSeverity, severity),
+                    source="autotools-language-server",
+                )
+                for node, message, severity in diagnostic(
+                    self.tree,
+                    os.path.dirname(
+                        unquote(urlparse(params.text_document.uri).path)
+                    ),
+                )
+            ]
+            self.publish_diagnostics(doc.uri, diagnostics)
 
     def _cursor_line(self, uri: str, position: Position) -> str:
         r"""Cursor line.
