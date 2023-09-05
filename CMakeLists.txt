@@ -3,13 +3,10 @@ include(FetchContent)
 FetchContent_Declare(
   tree-sitter-make
   GIT_REPOSITORY "https://github.com/alemuller/tree-sitter-make"
-  GIT_TAG main
-)
+  GIT_TAG main)
 FetchContent_MakeAvailable(tree-sitter-make)
 include_directories(${tree-sitter-make_SOURCE_DIR}/src)
-add_library(parser SHARED
-  ${tree-sitter-make_SOURCE_DIR}/src/parser.c
-)
+add_library(parser SHARED ${tree-sitter-make_SOURCE_DIR}/src/parser.c)
 if(NOT DEFINED SKBUILD_PLATLIB_DIR)
   set(SKBUILD_PLATLIB_DIR ${CMAKE_SOURCE_DIR}/src)
 endif()
