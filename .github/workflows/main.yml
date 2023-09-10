@@ -60,10 +60,6 @@ jobs:
       - name: Build sdist
         run: |
           pyproject-build -s
-      - uses: pypa/gh-action-pypi-publish@release/v1
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          password: ${{ secrets.PYPI_API_TOKEN }}
       - uses: actions/upload-artifact@v3
         if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
         with:
@@ -79,6 +75,10 @@ jobs:
           # body_path: build/CHANGELOG.md
           files: |
             dist/*
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
 
   deploy-aur:
     needs: build
