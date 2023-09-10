@@ -29,7 +29,13 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: CPython",
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
-dynamic = ["version", "dependencies", "optional-dependencies"]
+# dynamic = ["version", "dependencies", "optional-dependencies"]
+# https://github.com/pypa/twine/issues/753
+dynamic = ["version"]
+dependencies = ["platformdirs", "pygls", "tree-sitter"]
+
+[project.optional-dependencies]
+dev = ["pytest-cov"]
 
 [[project.authors]]
 name = "Wu Zhenyu"
