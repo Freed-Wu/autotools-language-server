@@ -29,13 +29,33 @@ def get_parser():
 
         shtab.add_argument_to(parser)
     parser.add_argument("--version", version=VERSION, action="version")
+    parser.add_argument(
+        "--check",
+        nargs="*",
+        default=[],
+        help="check file's errors and warnings",
+    )
+    parser.add_argument(
+        "--color",
+        choices=["auto", "always", "never"],
+        default="auto",
+        help="when to display color",
+    )
     return parser
 
 
 def main():
     r"""Parse arguments and provide shell completions."""
     parser = get_parser()
-    parser.parse_args()
+    args = parser.parse_args()
+
+    from .parser import parse
+    from .tree_sitter_lsp.diagnose import check
+    from .utils import DIAGNOSTICS_FINDERS
+
+    result = check(args.check, DIAGNOSTICS_FINDERS, parse, args.color)
+    if args.check:
+        exit(result)
 
     from .server import AutotoolsLanguageServer
 

@@ -37,24 +37,27 @@
 [![pypi/implementation](https://shields.io/pypi/implementation/autotools-language-server)](https://pypi.org/project/autotools-language-server/#files)
 [![pypi/pyversions](https://shields.io/pypi/pyversions/autotools-language-server)](https://pypi.org/project/autotools-language-server/#files)
 
-Language server for [autotools](https://www.gnu.org/software/autotools). Support:
+Language server for
+[autotools](https://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html).
+Supports:
 
-- `configure.ac`
-- `Makefile.am`
-- `Makefile`
+- `configure.ac`: [autoconf](https://www.gnu.org/software/autoconf)
+- `Makefile.am`: [automake](https://www.gnu.org/software/automake)
+- `Makefile`: [make](https://www.gnu.org/software/make)
 
-Support:
+Features:
 
+- [x] diagnostic: only support `Makefile`
 - [x] document hover
 - [x] completion
-- [x] diagnostic
 - [ ] go to definition
+- [ ] go to references
+
+![diagnostic](https://github.com/Freed-Wu/autotools-language-server/assets/32936898/a1b35e66-7046-42e0-8db8-b636e711764d)
 
 ![document hover](https://github.com/SchemaStore/schemastore/assets/32936898/d8a2cdf1-d62b-46f4-87a9-12701ab660a6)
 
 ![completion](https://github.com/SchemaStore/schemastore/assets/32936898/fa0c523d-cb51-4870-92a4-07d64c624221)
-
-![diagnostic](https://github.com/Freed-Wu/autotools-language-server/assets/32936898/a1b35e66-7046-42e0-8db8-b636e711764d)
 
 Read
 [![readthedocs](https://shields.io/readthedocs/autotools-language-server)](https://autotools-language-server.readthedocs.io)

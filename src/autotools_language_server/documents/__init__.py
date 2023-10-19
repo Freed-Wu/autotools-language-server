@@ -43,7 +43,10 @@ def get_document(
     if method == "builtin":
         file = os.path.join(
             os.path.join(
-                os.path.join(os.path.dirname(__file__), "assets"), "json"
+                os.path.join(
+                    os.path.dirname(os.path.dirname(__file__)), "assets"
+                ),
+                "json",
             ),
             "autotools.json",
         )
@@ -66,20 +69,18 @@ def get_document(
     return document
 
 
-def check_extension(
-    path: str,
-) -> Literal["config", "make", ""]:
-    r"""Check extension.
+def get_filetype(uri: str) -> Literal["config", "make", ""]:
+    r"""Get filetype.
 
-    :param path:
-    :type path: str
+    :param uri:
+    :type uri: str
     :rtype: Literal["config", "make", ""]
     """
     if (
-        path.split(os.path.extsep)[-1] in ["mk"]
-        or os.path.basename(path).split(os.path.extsep)[0] == "Makefile"
+        uri.split(os.path.extsep)[-1] in ["mk"]
+        or os.path.basename(uri).split(os.path.extsep)[0] == "Makefile"
     ):
         return "make"
-    if os.path.basename(path) == "configure.ac":
+    if os.path.basename(uri) == "configure.ac":
         return "config"
     return ""
