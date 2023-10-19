@@ -50,12 +50,12 @@ Features:
 - [x] diagnostic: only support `Makefile`
 - [x] document hover
 - [x] completion
-- [ ] go to definition
-- [ ] go to references
+- [x] go to definitions: only support `Makefile`
+- [x] go to references: only support `Makefile`
 
 ![diagnostic](https://github.com/Freed-Wu/autotools-language-server/assets/32936898/a1b35e66-7046-42e0-8db8-b636e711764d)
 
-![document hover](https://github.com/SchemaStore/schemastore/assets/32936898/d8a2cdf1-d62b-46f4-87a9-12701ab660a6)
+![document hover](https://github.com/Freed-Wu/autotools-language-server/assets/32936898/d553d812-5978-45c4-ae8b-9703021da18a)
 
 ![completion](https://github.com/SchemaStore/schemastore/assets/32936898/fa0c523d-cb51-4870-92a4-07d64c624221)
 

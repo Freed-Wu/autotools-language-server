@@ -3,14 +3,15 @@ r"""Server
 """
 import re
 from typing import Any
-from urllib.parse import unquote, urlparse
 
 from lsprotocol.types import (
     INITIALIZE,
     TEXT_DOCUMENT_COMPLETION,
+    TEXT_DOCUMENT_DEFINITION,
     TEXT_DOCUMENT_DID_CHANGE,
     TEXT_DOCUMENT_DID_OPEN,
     TEXT_DOCUMENT_HOVER,
+    TEXT_DOCUMENT_REFERENCES,
     CompletionItem,
     CompletionItemKind,
     CompletionList,
@@ -18,6 +19,7 @@ from lsprotocol.types import (
     DidChangeTextDocumentParams,
     Hover,
     InitializeParams,
+    Location,
     MarkupContent,
     MarkupKind,
     Position,
@@ -27,9 +29,11 @@ from lsprotocol.types import (
 from pygls.server import LanguageServer
 
 from .documents import get_document, get_filetype
+from .finders import DefinitionFinder, ReferenceFinder
 from .parser import parse
+from .tree_sitter_lsp import UNI
 from .tree_sitter_lsp.diagnose import get_diagnostics
-from .tree_sitter_lsp.finders import PositionFinder, TypeFinder
+from .tree_sitter_lsp.finders import PositionFinder
 from .utils import DIAGNOSTICS_FINDERS
 
 
@@ -73,6 +77,52 @@ class AutotoolsLanguageServer(LanguageServer):
             )
             self.publish_diagnostics(params.text_document.uri, diagnostics)
 
+        @self.feature(TEXT_DOCUMENT_DEFINITION)
+        def definition(params: TextDocumentPositionParams) -> list[Location]:
+            r"""Get definition.
+
+            :param params:
+            :type params: TextDocumentPositionParams
+            :rtype: list[Location]
+            """
+            if get_filetype(params.text_document.uri) != "make":
+                return []
+            document = self.workspace.get_document(params.text_document.uri)
+            uni = PositionFinder(params.position).find(
+                document.uri, self.trees[document.uri]
+            )
+            if uni is None:
+                return []
+            return [
+                uni.get_location()
+                for uni in DefinitionFinder(uni.node).find_all(
+                    document.uri, self.trees[document.uri]
+                )
+            ]
+
+        @self.feature(TEXT_DOCUMENT_REFERENCES)
+        def references(params: TextDocumentPositionParams) -> list[Location]:
+            r"""Get references.
+
+            :param params:
+            :type params: TextDocumentPositionParams
+            :rtype: list[Location]
+            """
+            if get_filetype(params.text_document.uri) != "make":
+                return []
+            document = self.workspace.get_document(params.text_document.uri)
+            uni = PositionFinder(params.position).find(
+                document.uri, self.trees[document.uri]
+            )
+            if uni is None:
+                return []
+            return [
+                uni.get_location()
+                for uni in ReferenceFinder(uni.node).find_all(
+                    document.uri, self.trees[document.uri]
+                )
+            ]
+
         @self.feature(TEXT_DOCUMENT_HOVER)
         def hover(params: TextDocumentPositionParams) -> Hover | None:
             r"""Hover.
@@ -96,6 +146,22 @@ class AutotoolsLanguageServer(LanguageServer):
                 parent = uni.node.parent
                 if parent is None:
                     return None
+                if parent.type in [
+                    "prerequisites",
+                    "variable_reference",
+                    "function_call",
+                ]:
+                    result = "\n".join(
+                        DefinitionFinder.uni2document(uni)
+                        for uni in DefinitionFinder(uni.node).find_all(
+                            document.uri, self.trees[document.uri]
+                        )
+                    )
+                    if result != "":
+                        return Hover(
+                            MarkupContent(MarkupKind.PlainText, result),
+                            _range,
+                        )
                 if parent.type not in [
                     "variable_reference",
                     "function_call",
