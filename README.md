@@ -39,6 +39,7 @@
 
 Language server for
 [autotools](https://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html).
+
 Supports:
 
 - `configure.ac`: [autoconf](https://www.gnu.org/software/autoconf)
@@ -49,9 +50,26 @@ Features:
 
 - [x] diagnostic: only support `Makefile`
 - [x] document hover
+  - [x] definition
+  - [x] document
+- [ ] format
 - [x] completion
+  - [ ] definition
+  - [x] document
 - [x] go to definitions: only support `Makefile`
+  - [x] function
+  - [x] variable
+  - [x] target
 - [x] go to references: only support `Makefile`
+  - [x] function
+  - [x] variable
+  - [x] target
+
+Other features:
+
+- [x] pre-commit-hooks
+  - [x] linter
+  - [ ] formatter
 
 ![diagnostic](https://github.com/Freed-Wu/autotools-language-server/assets/32936898/a1b35e66-7046-42e0-8db8-b636e711764d)
 
