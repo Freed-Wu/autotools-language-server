@@ -131,6 +131,7 @@ class RepeatedFinder(Finder):
         :rtype: None
         """
         self.unis = []
+        self._unis = []
         self.uni_pairs = []
 
     def filter(self, uni: UNI) -> bool:
@@ -162,11 +163,11 @@ class RepeatedFinder(Finder):
         """
         if self.filter(uni) is False:
             return False
-        for _uni in self.unis:
+        for _uni in self._unis:
             if self.compare(uni, _uni):
                 self.uni_pairs += [[uni, _uni]]
                 return True
-        self.unis += [uni]
+        self._unis += [uni]
         return False
 
     def get_definitions(self, uni: UNI) -> list[Location]:

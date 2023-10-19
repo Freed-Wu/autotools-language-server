@@ -9,7 +9,7 @@ define f
 	@echo $(1)
 endef
 .PHONY: default all
-default all:
+default all: test
 	$(call f,test)
 	ls $(CURDIR)
 DRIVER_NAME := $(notdir $(SRC))
@@ -25,5 +25,4 @@ default:
 $(RULES):
 	$(KERNEL_MAKE) $@
 endif
-test:
 pwd
