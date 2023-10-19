@@ -217,7 +217,10 @@ class DefinitionFinder(RepeatedTargetFinder):
             parent = parent.parent
             if parent is None:
                 raise TypeError
-        return uni.uri + "\n" + UNI.node2text(parent)
+        return f"""<{uni.uri}>
+```make
+{UNI.node2text(parent)}
+```"""
 
 
 class ReferenceFinder(RepeatedTargetFinder):

@@ -73,7 +73,7 @@ Other features:
 
 ![diagnostic](https://github.com/Freed-Wu/autotools-language-server/assets/32936898/a1b35e66-7046-42e0-8db8-b636e711764d)
 
-![document hover](https://github.com/Freed-Wu/autotools-language-server/assets/32936898/d553d812-5978-45c4-ae8b-9703021da18a)
+![document hover](https://github.com/Freed-Wu/autotools-language-server/assets/32936898/c39c08fd-3c8e-474d-99f4-e9f919f4da37)
 
 ![completion](https://github.com/SchemaStore/schemastore/assets/32936898/fa0c523d-cb51-4870-92a4-07d64c624221)
 

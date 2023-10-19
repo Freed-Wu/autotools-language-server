@@ -159,7 +159,7 @@ class AutotoolsLanguageServer(LanguageServer):
                     )
                     if result != "":
                         return Hover(
-                            MarkupContent(MarkupKind.PlainText, result),
+                            MarkupContent(MarkupKind.Markdown, result),
                             _range,
                         )
                 if parent.type not in [
