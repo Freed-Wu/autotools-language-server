@@ -1,0 +1,9 @@
+---
+- id: autotools-language-server-check
+  name: autotools language server check
+  description: >
+    Check Makefile
+  language: python
+  types:
+    - makefile
+  entry: autotools-language-server --check
