@@ -16,6 +16,7 @@ LIBS = glob(
 if len(LIBS) > 0:
     LIB = LIBS[0]
 else:
+    # https://github.com/nvim-treesitter/nvim-treesitter/issues/5493
     LIB = str(
         next(
             (
