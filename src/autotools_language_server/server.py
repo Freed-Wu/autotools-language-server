@@ -177,7 +177,7 @@ class AutotoolsLanguageServer(LanguageServer):
                     params.text_document.uri, params.position, True
                 )
             result, _filetype = self.document.get(text, ["", ""])
-            if _filetype != filetype:
+            if result == "" or _filetype != filetype:
                 return None
             return Hover(
                 MarkupContent(MarkupKind.PlainText, result),
