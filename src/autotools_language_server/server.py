@@ -29,12 +29,14 @@ from lsprotocol.types import (
 from pygls.server import LanguageServer
 
 from .documents import get_document, get_filetype
-from .finders import DefinitionFinder, ReferenceFinder
+from .finders import (
+    DIAGNOSTICS_FINDER_CLASSES,
+    DefinitionFinder,
+    ReferenceFinder,
+)
 from .parser import parse
-from .tree_sitter_lsp import UNI
 from .tree_sitter_lsp.diagnose import get_diagnostics
 from .tree_sitter_lsp.finders import PositionFinder
-from .utils import DIAGNOSTICS_FINDERS
 
 
 class AutotoolsLanguageServer(LanguageServer):
@@ -71,9 +73,9 @@ class AutotoolsLanguageServer(LanguageServer):
             document = self.workspace.get_document(params.text_document.uri)
             self.trees[document.uri] = parse(document.source.encode())
             diagnostics = get_diagnostics(
-                DIAGNOSTICS_FINDERS,
                 document.uri,
                 self.trees[document.uri],
+                DIAGNOSTICS_FINDER_CLASSES,
             )
             self.publish_diagnostics(params.text_document.uri, diagnostics)
 

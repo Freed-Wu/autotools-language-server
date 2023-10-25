@@ -3,9 +3,12 @@ r"""Finders
 """
 import os
 from copy import deepcopy
+from dataclasses import dataclass
 from typing import Any
 
 from jinja2 import Template
+from jsonschema import Validator
+from jsonschema.validators import validator_for
 from lsprotocol.types import (
     Diagnostic,
     DiagnosticSeverity,
@@ -17,25 +20,15 @@ from lsprotocol.types import (
 from tree_sitter import Node, Tree
 
 from . import UNI, Finder
+from .schema import Trie
 
 
+@dataclass
 class MissingFinder(Finder):
     r"""Missingfinder."""
 
-    def __init__(
-        self,
-        message: str = "{{uni.get_text()}}: missing",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
-    ) -> None:
-        r"""Init.
-
-        :param message:
-        :type message: str
-        :param severity:
-        :type severity: DiagnosticSeverity
-        :rtype: None
-        """
-        super().__init__(message, severity)
+    message: str = "{{uni.get_text()}}: missing"
+    severity: DiagnosticSeverity = DiagnosticSeverity.Error
 
     def __call__(self, uni: UNI) -> bool:
         r"""Call.
@@ -50,23 +43,12 @@ class MissingFinder(Finder):
         )
 
 
+@dataclass
 class ErrorFinder(Finder):
     r"""Errorfinder."""
 
-    def __init__(
-        self,
-        message: str = "{{uni.get_text()}}: error",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
-    ) -> None:
-        r"""Init.
-
-        :param message:
-        :type message: str
-        :param severity:
-        :type severity: DiagnosticSeverity
-        :rtype: None
-        """
-        super().__init__(message, severity)
+    message: str = "{{uni.get_text()}}: error"
+    severity: DiagnosticSeverity = DiagnosticSeverity.Error
 
     def __call__(self, uni: UNI) -> bool:
         r"""Call.
@@ -81,23 +63,12 @@ class ErrorFinder(Finder):
         )
 
 
+@dataclass
 class NotFileFinder(Finder):
     r"""NotFilefinder."""
 
-    def __init__(
-        self,
-        message: str = "{{uni.get_text()}}: no such file or directory",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
-    ) -> None:
-        r"""Init.
-
-        :param message:
-        :type message: str
-        :param severity:
-        :type severity: DiagnosticSeverity
-        :rtype: None
-        """
-        super().__init__(message, severity)
+    message: str = "{{uni.get_text()}}: no such file or directory"
+    severity: DiagnosticSeverity = DiagnosticSeverity.Error
 
     def __call__(self, uni: UNI) -> bool:
         r"""Call.
@@ -110,29 +81,19 @@ class NotFileFinder(Finder):
         return not (os.path.isfile(path) or os.path.isdir(path))
 
 
+@dataclass
 class RepeatedFinder(Finder):
     r"""Repeatedfinder."""
 
-    def __init__(
-        self,
-        message: str = "{{uni.get_text()}}: is repeated on {{_uni}}",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Warning,
-    ) -> None:
-        r"""Init.
-
-        :param message:
-        :type message: str
-        :param severity:
-        :type severity: DiagnosticSeverity
-        :rtype: None
-        """
-        super().__init__(message, severity)
+    message: str = "{{uni.get_text()}}: is repeated on {{_uni}}"
+    severity: DiagnosticSeverity = DiagnosticSeverity.Warning
 
     def reset(self) -> None:
         r"""Reset.
 
         :rtype: None
         """
+        self.level = 0
         self.unis = []
         self._unis = []
         self.uni_pairs = []
@@ -234,23 +195,12 @@ class RepeatedFinder(Finder):
         return uni.get_diagnostic(self.message, self.severity)
 
 
+@dataclass
 class UnsortedFinder(RepeatedFinder):
     r"""Unsortedfinder."""
 
-    def __init__(
-        self,
-        message: str = "{{uni.get_text()}}: is unsorted due to {{_uni}}",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Warning,
-    ) -> None:
-        r"""Init.
-
-        :param message:
-        :type message: str
-        :param severity:
-        :type severity: DiagnosticSeverity
-        :rtype: None
-        """
-        super().__init__(message, severity)
+    message: str = "{{uni.get_text()}}: is unsorted due to {{_uni}}"
+    severity: DiagnosticSeverity = DiagnosticSeverity.Warning
 
     def compare(self, uni: UNI, _uni: UNI) -> bool:
         r"""Compare.
@@ -264,6 +214,7 @@ class UnsortedFinder(RepeatedFinder):
         return uni.node.text < _uni.node.text
 
 
+@dataclass(init=False)
 class UnFixedOrderFinder(RepeatedFinder):
     r"""Unfixedorderfinder."""
 
@@ -309,20 +260,20 @@ class UnFixedOrderFinder(RepeatedFinder):
         )
 
 
+@dataclass(init=False)
 class TypeFinder(Finder):
     r"""Typefinder."""
 
     def __init__(
         self,
-        _type: str,
+        type: str,
         message: str = "",
         severity: DiagnosticSeverity = DiagnosticSeverity.Information,
     ) -> None:
         r"""Init.
 
-        :param self:
-        :param _type:
-        :type _type: str
+        :param type:
+        :type type: str
         :param message:
         :type message: str
         :param severity:
@@ -330,7 +281,7 @@ class TypeFinder(Finder):
         :rtype: None
         """
         super().__init__(message, severity)
-        self.type = _type
+        self.type = type
 
     def __call__(self, uni: UNI) -> bool:
         r"""Call.
@@ -343,17 +294,27 @@ class TypeFinder(Finder):
         return node.type == self.type
 
 
+@dataclass(init=False)
 class PositionFinder(Finder):
     r"""Positionfinder."""
 
-    def __init__(self, position: Position) -> None:
+    def __init__(
+        self,
+        position: Position,
+        message: str = "",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Information,
+    ) -> None:
         r"""Init.
 
         :param position:
         :type position: Position
+        :param message:
+        :type message: str
+        :param severity:
+        :type severity: DiagnosticSeverity
         :rtype: None
         """
-        super().__init__()
+        super().__init__(message, severity)
         self.position = position
 
     @staticmethod
@@ -381,18 +342,28 @@ class PositionFinder(Finder):
         return node.child_count == 0 and self.belong(self.position, node)
 
 
+@dataclass(init=False)
 class RangeFinder(Finder):
     r"""Rangefinder."""
 
-    def __init__(self, _range: Range) -> None:
+    def __init__(
+        self,
+        range: Range,
+        message: str = "",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Information,
+    ) -> None:
         r"""Init.
 
-        :param _range:
-        :type _range: Range
+        :param range:
+        :type range: Range
+        :param message:
+        :type message: str
+        :param severity:
+        :type severity: DiagnosticSeverity
         :rtype: None
         """
-        super().__init__()
-        self.range = _range
+        super().__init__(message, severity)
+        self.range = range
 
     @staticmethod
     def equal(_range: Range, node: Node) -> bool:
@@ -419,6 +390,7 @@ class RangeFinder(Finder):
         return self.equal(self.range, node)
 
 
+@dataclass(init=False)
 class RequiresFinder(Finder):
     r"""Requiresfinder."""
 
@@ -439,6 +411,7 @@ class RequiresFinder(Finder):
         :rtype: None
         """
         self.requires = requires
+        # will call reset() which will call self.requires
         super().__init__(message, severity)
 
     def reset(self) -> None:
@@ -446,6 +419,7 @@ class RequiresFinder(Finder):
 
         :rtype: None
         """
+        self.level = 0
         self.unis = []
         self._requires = deepcopy(self.requires)
 
@@ -487,15 +461,6 @@ class RequiresFinder(Finder):
             uni=self, require=require, **kwargs
         )
 
-    def get_end(self, tree: Tree) -> int:
-        r"""Get end.
-
-        :param tree:
-        :type tree: Tree
-        :rtype: int
-        """
-        return len(UNI.node2text(tree.root_node).splitlines()[0]) - 1
-
     def get_diagnostics(self, uri: str, tree: Tree) -> list[Diagnostic]:
         r"""Get diagnostics.
 
@@ -506,12 +471,60 @@ class RequiresFinder(Finder):
         :rtype: list[Diagnostic]
         """
         self.find_all(uri, tree)
-        end = self.get_end(tree)
         return [
             Diagnostic(
-                Range(Position(0, 0), Position(0, end)),
+                # If you want to specify a range that contains a line including
+                # the line ending character(s) then use an end position
+                # denoting the start of the next line
+                Range(Position(0, 0), Position(1, 0)),
                 self.require2message(i),
                 self.severity,
             )
             for i in self._requires
+        ]
+
+
+@dataclass(init=False)
+class SchemaFinder(Finder):
+    r"""Schemafinder."""
+
+    def __init__(self, schema: dict[str, Any], cls: type[Trie]) -> None:
+        r"""Init.
+
+        :param schema:
+        :type schema: dict[str, Any]
+        :param cls:
+        :type cls: type[Trie]
+        :rtype: None
+        """
+        self.validator = self.schema2validator(schema)
+        self.cls = cls
+
+    @staticmethod
+    def schema2validator(schema: dict[str, Any]) -> Validator:
+        r"""Schema2validator.
+
+        :param schema:
+        :type schema: dict[str, Any]
+        :rtype: Validator
+        """
+        return validator_for(schema)(schema)
+
+    def get_diagnostics(self, _: str, tree: Tree) -> list[Diagnostic]:
+        r"""Get diagnostics.
+
+        :param _:
+        :type _: str
+        :param tree:
+        :type tree: Tree
+        :rtype: list[Diagnostic]
+        """
+        trie = self.cls.from_tree(tree)
+        return [
+            Diagnostic(
+                trie.from_path(error.json_path).range,
+                error.message,
+                DiagnosticSeverity.Error,
+            )
+            for error in self.validator.iter_errors(trie.to_json())
         ]
