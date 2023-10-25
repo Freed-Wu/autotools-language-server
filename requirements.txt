@@ -2,6 +2,7 @@
 
 colorama
 jinja2
+jsonschema
 platformdirs
 pygls
 tree-sitter

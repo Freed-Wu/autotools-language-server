@@ -8,7 +8,7 @@ from tree_sitter import Node, Tree
 
 from .parser import parse as _parse
 from .tree_sitter_lsp import UNI, Finder
-from .tree_sitter_lsp.finders import RepeatedFinder
+from .tree_sitter_lsp.finders import ErrorFinder, MissingFinder, RepeatedFinder
 
 
 class InvalidPathFinder(Finder):
@@ -300,3 +300,11 @@ class ReferenceFinder(RepeatedTargetFinder):
         :rtype: bool
         """
         return self.is_reference(uni)
+
+
+DIAGNOSTICS_FINDER_CLASSES = [
+    ErrorFinder,
+    MissingFinder,
+    InvalidPathFinder,
+    RepeatedTargetFinder,
+]
