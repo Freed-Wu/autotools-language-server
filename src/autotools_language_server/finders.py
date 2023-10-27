@@ -5,10 +5,9 @@ import os
 
 from lsprotocol.types import DiagnosticSeverity
 from tree_sitter import Node, Tree
-
-from .parser import parse as _parse
-from .tree_sitter_lsp import UNI, Finder
-from .tree_sitter_lsp.finders import ErrorFinder, MissingFinder, RepeatedFinder
+from tree_sitter_languages import get_parser
+from tree_sitter_lsp import UNI, Finder
+from tree_sitter_lsp.finders import ErrorFinder, MissingFinder, RepeatedFinder
 
 
 class InvalidPathFinder(Finder):
@@ -80,6 +79,7 @@ class RepeatedTargetFinder(RepeatedFinder):
         :rtype: None
         """
         super().__init__(message, severity)
+        self.parser = get_parser("make")
 
     def is_include_node(self, node: Node) -> bool:
         r"""Is include node.
@@ -99,7 +99,7 @@ class RepeatedTargetFinder(RepeatedFinder):
         :type code: bytes
         :rtype: Tree
         """
-        return _parse(code)
+        return self.parser.parse(code)
 
     def filter(self, uni: UNI) -> bool:
         r"""Filter.

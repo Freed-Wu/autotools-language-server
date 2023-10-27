@@ -1,8 +1,5 @@
 #!/usr/bin/env -S pip install -r
 
-colorama
-jinja2
-jsonschema
 platformdirs
-pygls
-tree-sitter
+tree-sitter-languages
+tree-sitter-lsp

@@ -27,16 +27,16 @@ from lsprotocol.types import (
     TextDocumentPositionParams,
 )
 from pygls.server import LanguageServer
+from tree_sitter_languages import get_parser
+from tree_sitter_lsp.diagnose import get_diagnostics
+from tree_sitter_lsp.finders import PositionFinder
 
-from .documents import get_document, get_filetype
 from .finders import (
     DIAGNOSTICS_FINDER_CLASSES,
     DefinitionFinder,
     ReferenceFinder,
 )
-from .parser import parse
-from .tree_sitter_lsp.diagnose import get_diagnostics
-from .tree_sitter_lsp.finders import PositionFinder
+from .utils import get_filetype, get_schema
 
 
 class AutotoolsLanguageServer(LanguageServer):
@@ -50,14 +50,8 @@ class AutotoolsLanguageServer(LanguageServer):
         :rtype: None
         """
         super().__init__(*args)
-        self.document = {}
         self.trees = {}
-
-        @self.feature(INITIALIZE)
-        def initialize(params: InitializeParams) -> None:
-            opts = params.initialization_options
-            method = getattr(opts, "method", "builtin")
-            self.document = get_document(method)  # type: ignore
+        self.parser = get_parser("make")
 
         @self.feature(TEXT_DOCUMENT_DID_OPEN)
         @self.feature(TEXT_DOCUMENT_DID_CHANGE)
@@ -71,7 +65,9 @@ class AutotoolsLanguageServer(LanguageServer):
             if get_filetype(params.text_document.uri) != "make":
                 return None
             document = self.workspace.get_document(params.text_document.uri)
-            self.trees[document.uri] = parse(document.source.encode())
+            self.trees[document.uri] = self.parser.parse(
+                document.source.encode()
+            )
             diagnostics = get_diagnostics(
                 document.uri,
                 self.trees[document.uri],
@@ -134,6 +130,8 @@ class AutotoolsLanguageServer(LanguageServer):
             :rtype: Hover | None
             """
             filetype = get_filetype(params.text_document.uri)
+            if filetype == "":
+                return None
             if filetype == "make":
                 document = self.workspace.get_document(
                     params.text_document.uri
@@ -151,7 +149,7 @@ class AutotoolsLanguageServer(LanguageServer):
                 if parent.type in [
                     "prerequisites",
                     "variable_reference",
-                    "function_call",
+                    "arguments",
                 ]:
                     result = "\n".join(
                         DefinitionFinder.uni2document(uni)
@@ -178,13 +176,16 @@ class AutotoolsLanguageServer(LanguageServer):
                 text, _range = self._cursor_word(
                     params.text_document.uri, params.position, True
                 )
-            result, _filetype = self.document.get(text, ["", ""])
-            if result == "" or _filetype != filetype:
-                return None
-            return Hover(
-                MarkupContent(MarkupKind.PlainText, result),
-                _range,
-            )
+            if (
+                description := get_schema(filetype)
+                .get("properties", {})
+                .get(text, {})
+                .get("description")
+            ):
+                return Hover(
+                    MarkupContent(MarkupKind.Markdown, description),
+                    _range,
+                )
 
         @self.feature(TEXT_DOCUMENT_COMPLETION)
         def completions(params: CompletionParams) -> CompletionList:
@@ -204,11 +205,13 @@ class AutotoolsLanguageServer(LanguageServer):
                 CompletionItem(
                     k,
                     kind=CompletionItemKind.Function,
-                    documentation=v[0],
+                    documentation=MarkupContent(
+                        MarkupKind.Markdown, v.get("description", "")
+                    ),
                     insert_text=k,
                 )
-                for k, v in self.document.items()
-                if k.startswith(text) and v[1] == filetype
+                for k, v in get_schema(filetype).get("properties", {}).items()
+                if k.startswith(text)
             ]
             return CompletionList(is_incomplete=False, items=items)
 
