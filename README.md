@@ -48,20 +48,20 @@ Supports:
 
 Features:
 
-- [x] [Goto Definition](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_definition):
+- [x] [Goto Definition](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_definition)
   - [x] function
   - [x] variable
   - [x] target
-- [x] [Find References](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_references):
+- [x] [Find References](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_references)
   - [x] function
   - [x] variable
   - [x] target
-- [x] [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current#diagnostic):
-- [ ] [Document Formatting](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_formatting):
+- [x] [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current#diagnostic)
+- [ ] [Document Formatting](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_formatting)
 - [x] [Hover](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_hover)
   - [x] definition
   - [x] document
-- [x] [Completion](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_completion):
+- [x] [Completion](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_completion)
   - [ ] definition
   - [x] document
 
