@@ -2,6 +2,7 @@ r"""Finders
 ===========
 """
 import os
+from dataclasses import dataclass
 
 from lsprotocol.types import DiagnosticSeverity
 from tree_sitter import Node, Tree
@@ -10,23 +11,12 @@ from tree_sitter_lsp import UNI, Finder
 from tree_sitter_lsp.finders import ErrorFinder, MissingFinder, RepeatedFinder
 
 
+@dataclass
 class InvalidPathFinder(Finder):
     r"""Invalidpathfinder."""
 
-    def __init__(
-        self,
-        message: str = "{{uni.get_text()}}: no such file",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
-    ) -> None:
-        r"""Init.
-
-        :param message:
-        :type message: str
-        :param severity:
-        :type severity: DiagnosticSeverity
-        :rtype: None
-        """
-        super().__init__(message, severity)
+    message: str = "{{uni.get_text()}}: no such file"
+    severity: DiagnosticSeverity = DiagnosticSeverity.Error
 
     @staticmethod
     def get_option(uni: UNI) -> str:
@@ -62,23 +52,18 @@ class InvalidPathFinder(Finder):
         return False
 
 
+@dataclass
 class RepeatedTargetFinder(RepeatedFinder):
     r"""Repeatedtargetfinder."""
 
-    def __init__(
-        self,
-        message: str = "{{uni.get_text()}}: is repeated on {{_uni}}",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Warning,
-    ) -> None:
-        r"""Init.
+    message: str = "{{uni.get_text()}}: is repeated on {{_uni}}"
+    severity: DiagnosticSeverity = DiagnosticSeverity.Warning
 
-        :param message:
-        :type message: str
-        :param severity:
-        :type severity: DiagnosticSeverity
+    def __post_init__(self) -> None:
+        r"""Post init.
+
         :rtype: None
         """
-        super().__init__(message, severity)
         self.parser = get_parser("make")
 
     def is_include_node(self, node: Node) -> bool:
@@ -119,6 +104,7 @@ class RepeatedTargetFinder(RepeatedFinder):
 
 
 # https://github.com/alemuller/tree-sitter-make/issues/22
+@dataclass(init=False)
 class DefinitionFinder(RepeatedTargetFinder):
     r"""Definitionfinder."""
 
@@ -223,6 +209,7 @@ class DefinitionFinder(RepeatedTargetFinder):
 ```"""
 
 
+@dataclass(init=False)
 class ReferenceFinder(RepeatedTargetFinder):
     r"""Referencefinder."""
 
