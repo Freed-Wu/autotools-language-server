@@ -1,9 +1,10 @@
 r"""Test finders."""
 import os
 
+from tree_sitter_languages import get_parser
+from tree_sitter_lsp import UNI
+
 from autotools_language_server.finders import DefinitionFinder
-from autotools_language_server.parser import parse
-from autotools_language_server.tree_sitter_lsp import UNI
 
 PATH = os.path.dirname(__file__)
 
@@ -16,7 +17,7 @@ class Test:
         file = os.path.join(PATH, "Makefile")
         with open(file, "rb") as f:
             text = f.read()
-        tree = parse(text)
+        tree = get_parser("make").parse(text)
         finder = DefinitionFinder(
             tree.root_node.children[10]
             .children[1]

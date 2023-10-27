@@ -5,6 +5,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 from contextlib import suppress
 from datetime import datetime
 
+from . import FILETYPE
 from . import __name__ as NAME
 from . import __version__
 
@@ -30,6 +31,17 @@ def get_parser():
         shtab.add_argument_to(parser)
     parser.add_argument("--version", version=VERSION, action="version")
     parser.add_argument(
+        "--generate-schema",
+        choices=FILETYPE.__args__,  # type: ignore
+        help="generate schema json",
+    )
+    parser.add_argument(
+        "--indent",
+        type=int,
+        default=2,
+        help="generated json's indent",
+    )
+    parser.add_argument(
         "--check",
         nargs="*",
         default=[],
@@ -49,11 +61,27 @@ def main():
     parser = get_parser()
     args = parser.parse_args()
 
-    from .parser import parse
-    from .tree_sitter_lsp.diagnose import check
-    from .utils import DIAGNOSTICS_FINDERS
+    if args.generate_schema:
+        from tree_sitter_lsp.utils import pprint
 
-    result = check(args.check, DIAGNOSTICS_FINDERS, parse, args.color)
+        from .misc import get_schema
+
+        pprint(get_schema(args.generate_schema), indent=args.indent)
+        exit()
+    from tree_sitter_languages import get_parser as _get_parser
+    from tree_sitter_lsp.diagnose import check
+
+    from .finders import DIAGNOSTICS_FINDER_CLASSES
+    from .utils import get_filetype
+
+    parser = _get_parser("make")
+    result = check(
+        args.check,
+        parser.parse,
+        DIAGNOSTICS_FINDER_CLASSES,
+        get_filetype,
+        args.color,
+    )
     if args.check:
         exit(result)
 
