@@ -1,5 +1,4 @@
 #!/usr/bin/env -S pip install -r
 
-platformdirs
 tree-sitter-languages
 tree-sitter-lsp
