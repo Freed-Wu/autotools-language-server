@@ -45,8 +45,10 @@ Source = "https://github.com/Freed-Wu/autotools-language-server"
 [project.scripts]
 autotools-language-server = "autotools_language_server.__main__:main"
 
-[tool.scikit-build]
-experimental = true
+[tool.setuptools.data-files]
+"share/man/man1" = ["sdist/autotools-language-server.1"]
+"share/bash-completion/completions" = ["sdist/autotools-language-server"]
+"share/zsh/site-functions" = ["sdist/_autotools-language-server"]
 
 [tool.setuptools.dynamic.dependencies]
 file = "requirements.txt"
