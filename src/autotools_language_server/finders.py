@@ -46,7 +46,7 @@ class InvalidPathFinder(Finder):
             return (
                 uni.node.type == "word"
                 and parent.type == "list"
-                and option != "-include"
+                and option == "include"
                 and not os.path.isfile(path)
             )
         return False
