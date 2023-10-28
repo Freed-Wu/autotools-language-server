@@ -5,6 +5,9 @@ include common.mk
 include fake.mk
 -include fake.mk
 
+export KBUILD_EXTMOD
+export abs_objtree := $(CURDIR)
+unexport KBUILD_EXTMOD
 define f
 	@echo $(1)
 endef

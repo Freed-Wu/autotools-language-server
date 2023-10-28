@@ -29,7 +29,7 @@ class InvalidPathFinder(Finder):
         option = ""
         if parent := uni.node.parent:
             if children := getattr(parent.parent, "children", None):
-                if len(children) > 0:
+                if parent.parent == "include_directive" and len(children) > 0:
                     option = children[0].type
         return option
 
@@ -124,7 +124,12 @@ class DefinitionFinder(RepeatedTargetFinder):
             self.is_define = self.is_function_define
             # https://github.com/alemuller/tree-sitter-make/issues/8
             self.name = UNI.node2text(node).split(",")[0]
-        elif parent.type == "variable_reference":
+        elif node.type == "word" and (
+            parent.type == "variable_reference"
+            or parent.parent is not None
+            and parent.parent.type
+            in {"export_directive", "unexport_directive"}
+        ):
             self.is_define = self.is_variable_define
         elif parent.type == "prerequisites":
             self.is_define = self.is_target_define
@@ -263,7 +268,14 @@ class ReferenceFinder(RepeatedTargetFinder):
         if parent is None:
             return False
         return (
-            parent.type == "variable_reference" and uni.get_text() == self.name
+            uni.get_text() == self.name
+            and node.type == "word"
+            and (
+                parent.type == "variable_reference"
+                or parent.parent is not None
+                and parent.parent.type
+                in {"export_directive", "unexport_directive"}
+            )
         )
 
     def is_target_reference(self, uni: UNI) -> bool:
