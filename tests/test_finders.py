@@ -19,11 +19,11 @@ class Test:
             text = f.read()
         tree = get_parser("make").parse(text)
         finder = DefinitionFinder(
-            tree.root_node.children[10]
+            tree.root_node.children[13]
             .children[1]
             .children[0]
             .children[0]
             .children[2]
         )
-        result = finder(UNI(file, tree.root_node.children[9].children[0]))
+        result = finder(UNI(file, tree.root_node.children[12].children[0]))
         assert result is True
