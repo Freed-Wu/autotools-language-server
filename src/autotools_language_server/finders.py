@@ -7,49 +7,74 @@ from dataclasses import dataclass
 from lsprotocol.types import DiagnosticSeverity
 from tree_sitter import Node, Tree
 from tree_sitter_languages import get_parser
-from tree_sitter_lsp import UNI, Finder
-from tree_sitter_lsp.finders import ErrorFinder, MissingFinder, RepeatedFinder
+from tree_sitter_lsp import UNI
+from tree_sitter_lsp.finders import (
+    ErrorQueryFinder,
+    QueryFinder,
+    RepeatedFinder,
+)
+
+from .utils import get_query
 
 
-@dataclass
-class InvalidPathFinder(Finder):
+@dataclass(init=False)
+class ErrorMakeFinder(ErrorQueryFinder):
+    r"""Errormakefinder."""
+
+    def __init__(
+        self,
+        message: str = "{{uni.get_text()}}: error",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
+    ) -> None:
+        r"""Init.
+
+        :param filetype:
+        :type filetype: str
+        :param message:
+        :type message: str
+        :param severity:
+        :type severity: DiagnosticSeverity
+        :rtype: None
+        """
+        super().__init__("make", message, severity)
+
+
+@dataclass(init=False)
+class InvalidPathFinder(QueryFinder):
     r"""Invalidpathfinder."""
 
-    message: str = "{{uni.get_text()}}: no such file"
-    severity: DiagnosticSeverity = DiagnosticSeverity.Error
+    def __init__(
+        self,
+        message: str = "{{uni.get_text()}}: no such file",
+        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
+    ) -> None:
+        r"""Init.
 
-    @staticmethod
-    def get_option(uni: UNI) -> str:
-        r"""Get option.
-
-        :param uni:
-        :type uni: UNI
-        :rtype: str
+        :param message:
+        :type message: str
+        :param severity:
+        :type severity: DiagnosticSeverity
+        :rtype: None
         """
-        option = ""
-        if parent := uni.node.parent:
-            if children := getattr(parent.parent, "children", None):
-                if parent.parent == "include_directive" and len(children) > 0:
-                    option = children[0].type
-        return option
+        query = get_query("include")
+        super().__init__(query, message, severity)
 
-    def __call__(self, uni: UNI) -> bool:
-        r"""Call.
+    def capture2uni(self, capture: tuple[Node, str], uri: str) -> UNI | None:
+        r"""Capture2uni.
 
-        :param uni:
-        :type uni: UNI
-        :rtype: bool
+        :param capture:
+        :type capture: tuple[Node, str]
+        :param uri:
+        :type uri: str
+        :rtype: UNI | None
         """
-        path = self.uni2path(uni)
-        option = self.get_option(uni)
-        if parent := uni.node.parent:
-            return (
-                uni.node.type == "word"
-                and parent.type == "list"
-                and option == "include"
-                and not os.path.isfile(path)
-            )
-        return False
+        node, label = capture
+        uni = UNI(uri, node)
+        return (
+            uni
+            if label == "path" and not os.path.isfile(self.uni2path(uni))
+            else None
+        )
 
 
 @dataclass
@@ -302,8 +327,7 @@ class ReferenceFinder(RepeatedTargetFinder):
 
 
 DIAGNOSTICS_FINDER_CLASSES = [
-    ErrorFinder,
-    MissingFinder,
+    ErrorMakeFinder,
     InvalidPathFinder,
     RepeatedTargetFinder,
 ]
