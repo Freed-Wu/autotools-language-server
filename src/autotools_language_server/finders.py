@@ -130,7 +130,7 @@ class RepeatedTargetFinder(RepeatedFinder):
 
 # https://github.com/alemuller/tree-sitter-make/issues/22
 @dataclass(init=False)
-class DefinitionFinder(RepeatedTargetFinder):
+class DefinitionFinder(QueryFinder):
     r"""Definitionfinder."""
 
     def __init__(self, node: Node) -> None:
@@ -140,13 +140,12 @@ class DefinitionFinder(RepeatedTargetFinder):
         :type node: Node
         :rtype: None
         """
-        super().__init__()
         self.name = UNI.node2text(node)
         parent = node.parent
         if parent is None:
             raise TypeError
         if parent.type == "arguments":
-            self.is_define = self.is_function_define
+            self.label = "function"
             # https://github.com/alemuller/tree-sitter-make/issues/8
             self.name = UNI.node2text(node).split(",")[0]
         elif node.type == "word" and (
@@ -155,67 +154,31 @@ class DefinitionFinder(RepeatedTargetFinder):
             and parent.parent.type
             in {"export_directive", "unexport_directive"}
         ):
-            self.is_define = self.is_variable_define
+            self.label = "variable"
         elif parent.type == "prerequisites":
-            self.is_define = self.is_target_define
+            self.label = "rule"
         else:
             raise NotImplementedError
+        query = get_query("define")
+        super().__init__(query)
 
-    def is_function_define(self, uni: UNI) -> bool:
-        r"""Is function define.
-
-        :param uni:
-        :type uni: UNI
-        :rtype: bool
-        """
-        node = uni.node
-        parent = node.parent
-        if parent is None:
-            return False
-        return (
-            parent.type == "define_directive"
-            and uni.get_text() == self.name
-            and node == parent.children[1]
-        )
-
-    def is_variable_define(self, uni: UNI) -> bool:
-        r"""Is variable define.
-
-        :param uni:
-        :type uni: UNI
-        :rtype: bool
-        """
-        node = uni.node
-        parent = node.parent
-        if parent is None:
-            return False
-        return (
-            parent.type == "variable_assignment"
-            and uni.get_text() == self.name
-            and node == parent.children[0]
-        )
-
-    def is_target_define(self, uni: UNI) -> bool:
-        r"""Is target define.
-
-        :param uni:
-        :type uni: UNI
-        :rtype: bool
-        """
-        node = uni.node
-        parent = node.parent
-        if parent is None:
-            return False
-        return parent.type == "targets" and uni.get_text() == self.name
-
-    def __call__(self, uni: UNI) -> bool:
-        r"""Call.
-
-        :param uni:
-        :type uni: UNI
-        :rtype: bool
-        """
-        return self.is_define(uni)
+    def find_all(
+        self, uri: str, tree: Tree | None = None, reset: bool = True
+    ) -> list[UNI]:
+        tree = self.prepare(uri, tree, reset)
+        captures = self.query.captures(tree.root_node)
+        candidate = None
+        unis = []
+        for node, label in captures:
+            if label == self.label:
+                candidate = node
+                continue
+            if (
+                label == f"{self.label}.def"
+                and UNI.node2text(node) == self.name
+            ):
+                unis += [UNI(uri, node)]
+        return unis
 
     @staticmethod
     def uni2document(uni: UNI) -> str:
