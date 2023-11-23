@@ -145,6 +145,7 @@ class DefinitionFinder(RepeatedTargetFinder):
         parent = node.parent
         if parent is None:
             raise TypeError
+        self.is_define = lambda _: False
         if parent.type == "arguments":
             self.is_define = self.is_function_define
             # https://github.com/alemuller/tree-sitter-make/issues/8
@@ -158,8 +159,6 @@ class DefinitionFinder(RepeatedTargetFinder):
             self.is_define = self.is_variable_define
         elif parent.type == "prerequisites":
             self.is_define = self.is_target_define
-        else:
-            raise NotImplementedError
 
     def is_function_define(self, uni: UNI) -> bool:
         r"""Is function define.
@@ -255,14 +254,13 @@ class ReferenceFinder(RepeatedTargetFinder):
         parent = node.parent
         if parent is None:
             raise TypeError
+        self.is_reference = lambda _: False
         if parent.type == "define_directive":
             self.is_reference = self.is_function_reference
         elif parent.type == "variable_assignment":
             self.is_reference = self.is_variable_reference
         elif parent.type == "prerequisites":
             self.is_reference = self.is_target_reference
-        else:
-            raise NotImplementedError
 
     def is_function_reference(self, uni: UNI) -> bool:
         r"""Is function reference.
