@@ -1,4 +1,4 @@
 #!/usr/bin/env -S pip install -r
 
 tree-sitter-languages
-tree-sitter-lsp
+tree-sitter-lsp >= 0.0.4
