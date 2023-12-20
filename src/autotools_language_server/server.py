@@ -5,7 +5,6 @@ import re
 from typing import Any
 
 from lsprotocol.types import (
-    INITIALIZE,
     TEXT_DOCUMENT_COMPLETION,
     TEXT_DOCUMENT_DEFINITION,
     TEXT_DOCUMENT_DID_CHANGE,
@@ -18,7 +17,6 @@ from lsprotocol.types import (
     CompletionParams,
     DidChangeTextDocumentParams,
     Hover,
-    InitializeParams,
     Location,
     MarkupContent,
     MarkupKind,
@@ -42,11 +40,13 @@ from .utils import get_filetype, get_schema
 class AutotoolsLanguageServer(LanguageServer):
     r"""Autotools language server."""
 
-    def __init__(self, *args: Any) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         r"""Init.
 
         :param args:
         :type args: Any
+        :param kwargs:
+        :type kwargs: Any
         :rtype: None
         """
         super().__init__(*args)
