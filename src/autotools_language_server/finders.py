@@ -10,34 +10,12 @@ from tree_sitter import Node, Tree
 from tree_sitter_languages import get_parser
 from tree_sitter_lsp import UNI
 from tree_sitter_lsp.finders import (
-    ErrorQueryFinder,
+    ErrorFinder,
     QueryFinder,
     RepeatedFinder,
 )
 
 from .utils import get_query
-
-
-@dataclass(init=False)
-class ErrorMakeFinder(ErrorQueryFinder):
-    r"""Errormakefinder."""
-
-    def __init__(
-        self,
-        message: str = "{{uni.get_text()}}: error",
-        severity: DiagnosticSeverity = DiagnosticSeverity.Error,
-    ) -> None:
-        r"""Init.
-
-        :param filetype:
-        :type filetype: str
-        :param message:
-        :type message: str
-        :param severity:
-        :type severity: DiagnosticSeverity
-        :rtype: None
-        """
-        super().__init__("make", message, severity)
 
 
 @dataclass(init=False)
@@ -73,7 +51,7 @@ class InvalidPathFinder(QueryFinder):
         uni = UNI(uri, node)
         return (
             uni
-            if label == "path" and not os.path.isfile(self.uni2path(uni))
+            if label == "path" and not os.path.isfile(uni.get_path())
             else None
         )
 
@@ -326,7 +304,7 @@ class ReferenceFinder(RepeatedTargetFinder):
 
 
 DIAGNOSTICS_FINDER_CLASSES = [
-    ErrorMakeFinder,
+    ErrorFinder,
     InvalidPathFinder,
     RepeatedTargetFinder,
 ]
