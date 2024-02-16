@@ -4,4 +4,3 @@
    ) @include
  (#match? @include "^include")
  )
-; ex: filetype=query

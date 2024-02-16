@@ -1,11 +1,11 @@
 r"""Test utils"""
-import os
 
-from tree_sitter_languages import get_parser
-from tree_sitter_lsp.diagnose import check
+import os
 
 from autotools_language_server.finders import DIAGNOSTICS_FINDER_CLASSES
 from autotools_language_server.utils import get_filetype, get_schema
+from tree_sitter_languages import get_parser
+from tree_sitter_lsp.diagnose import check
 
 PATH = os.path.dirname(__file__)
 
