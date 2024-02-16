@@ -1,10 +1,10 @@
 r"""Test finders."""
+
 import os
 
+from autotools_language_server.finders import DefinitionFinder
 from tree_sitter_languages import get_parser
 from tree_sitter_lsp import UNI
-
-from autotools_language_server.finders import DefinitionFinder
 
 PATH = os.path.dirname(__file__)
 

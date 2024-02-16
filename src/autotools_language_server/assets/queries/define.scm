@@ -24,4 +24,3 @@
 (variable_reference
   (word) @variable.call
   )
-; ex: filetype=query
