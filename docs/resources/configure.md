@@ -17,11 +17,15 @@ For vim:
 ```json
 {
   "languageserver": {
-    "autotools": {
-      "command": "autotools-language-server",
+    "config": {
+      "command": "autoconf-language-server",
       "filetypes": [
-        "autoconf",
-        "automake",
+        "config"
+      ]
+    },
+    "make": {
+      "command": "make-language-server",
+      "filetypes": [
         "make"
       ]
     }
@@ -34,13 +38,23 @@ For vim:
 `~/.config/nvim/init.vim`:
 
 ```vim
-if executable('autotools-language-server')
+if executable('autoconf-language-server')
   augroup lsp
     autocmd!
     autocmd User lsp_setup call lsp#register_server({
-          \ 'name': 'autotools',
-          \ 'cmd': {server_info->['autotools-language-server']},
-          \ 'whitelist': ['autoconf', 'automake', 'make'],
+          \ 'name': 'config',
+          \ 'cmd': {server_info->['autoconf-language-server']},
+          \ 'whitelist': ['config'],
+          \ })
+  augroup END
+endif
+if executable('make-language-server')
+  augroup lsp
+    autocmd!
+    autocmd User lsp_setup call lsp#register_server({
+          \ 'name': 'make',
+          \ 'cmd': {server_info->['make-language-server']},
+          \ 'whitelist': ['make'],
           \ })
   augroup END
 endif
@@ -52,11 +66,20 @@ endif
 
 ```lua
 vim.api.nvim_create_autocmd({ "BufEnter" }, {
-  pattern = { "configure.ac", "Makefile.am", "Makefile" },
+  pattern = { "configure.ac" },
   callback = function()
     vim.lsp.start({
-      name = "autotools",
-      cmd = { "autotools-language-server" }
+      name = "config",
+      cmd = { "config-language-server" }
+    })
+  end,
+})
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
+  pattern = { "Makefile.am", "Makefile" },
+  callback = function()
+    vim.lsp.start({
+      name = "make",
+      cmd = { "make-language-server" }
     })
   end,
 })
@@ -69,9 +92,14 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 ```lisp
 (make-lsp-client :new-connection
 (lsp-stdio-connection
-  `(,(executable-find "autotools-language-server")))
-  :activation-fn (lsp-activate-on "configure.ac" "Makefile.am" "Makefile")
-  :server-id "autotools")))
+  `(,(executable-find "autoconf-language-server")))
+  :activation-fn (lsp-activate-on "configure.ac")
+  :server-id "config")))
+(make-lsp-client :new-connection
+(lsp-stdio-connection
+  `(,(executable-find "make-language-server")))
+  :activation-fn (lsp-activate-on "Makefile.am" "Makefile")
+  :server-id "make")))
 ```
 
 ## [Helix](https://helix-editor.com/)
@@ -81,18 +109,17 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 ```toml
 [[language]]
 name = "autoconf"
-language-servers = [ "autotools-language-server",]
-
-[[language]]
-name = "automake"
-language-servers = [ "autotools-language-server",]
+language-servers = [ "autoconf-language-server",]
 
 [[language]]
 name = "make"
-language-servers = [ "autotools-language-server",]
+language-servers = [ "make-language-server",]
 
-[language_server.autotools-language-server]
-command = "autotools-language-server"
+[language_server.autoconf-language-server]
+command = "autoconf-language-server"
+
+[language_server.make-language-server]
+command = "make-language-server"
 ```
 
 ## [KaKoune](https://kakoune.org/)
@@ -102,9 +129,13 @@ command = "autotools-language-server"
 `~/.config/kak-lsp/kak-lsp.toml`:
 
 ```toml
-[language_server.autotools-language-server]
-filetypes = [ "autoconf", "automake", "make",]
-command = "autotools-language-server"
+[language_server.autoconf-language-server]
+filetypes = [ "autoconf",]
+command = "autoconf-language-server"
+
+[language_server.make-language-server]
+filetypes = [ "make",]
+command = "make-language-server"
 ```
 
 ## [Sublime](https://www.sublimetext.com)
@@ -114,12 +145,19 @@ command = "autotools-language-server"
 ```json
 {
   "clients": {
-    "autotools": {
+    "autoconf": {
       "command": [
-        "autotools-language-server"
+        "autoconf-language-server"
       ],
       "enabled": true,
-      "selector": "source.autotools"
+      "selector": "source.autoconf"
+    },
+    "make": {
+      "command": [
+        "make-language-server"
+      ],
+      "enabled": true,
+      "selector": "source.make"
     }
   }
 }
@@ -135,7 +173,7 @@ command = "autotools-language-server"
 
 ```json
 {
-  "glspc.serverPath": "autotools-language-server",
+  "glspc.serverPath": "make-language-server",
   "glspc.languageId": "make"
 }
 ```

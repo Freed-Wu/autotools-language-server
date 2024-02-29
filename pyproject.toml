@@ -43,12 +43,26 @@ Download = "https://github.com/Freed-Wu/autotools-language-server/releases"
 Source = "https://github.com/Freed-Wu/autotools-language-server"
 
 [project.scripts]
-autotools-language-server = "autotools_language_server.__main__:main"
+make-language-server = "make_language_server.__main__:main"
+autoconf-language-server = "make_language_server.__main__:main"
+autotools-language-server = "make_language_server.__main__:main"
 
 [tool.setuptools.data-files]
-"share/man/man1" = ["sdist/autotools-language-server.1"]
-"share/bash-completion/completions" = ["sdist/autotools-language-server"]
-"share/zsh/site-functions" = ["sdist/_autotools-language-server"]
+"share/man/man1" = [
+  "sdist/make-language-server.1",
+  "sdist/autoconf-language-server.1",
+  "sdist/autotools-language-server.1",
+]
+"share/bash-completion/completions" = [
+  "sdist/make-language-server",
+  "sdist/autoconf-language-server",
+  "sdist/autotools-language-server",
+]
+"share/zsh/site-functions" = [
+  "sdist/_make-language-server",
+  "sdist/_autoconf-language-server",
+  "sdist/_autotools-language-server",
+]
 
 [tool.setuptools.dynamic.dependencies]
 file = "requirements.txt"
@@ -65,10 +79,10 @@ file = "requirements/misc.txt"
 # end: scripts/update-pyproject.toml.pl
 
 [tool.setuptools_scm]
-write_to = "src/autotools_language_server/_version.py"
+write_to = "src/make_language_server/_version.py"
 
 [tool.setuptools-generate]
-write-to = "src/autotools_language_server/_metainfo.py"
+write-to = "src/make_language_server/_metainfo.py"
 
 [tool.setuptools-generate.metainfo-template]
 file = "templates/metainfo.py.j2"

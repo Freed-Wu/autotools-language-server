@@ -5,8 +5,7 @@ r"""Autoconf
 from typing import Any
 
 from lsp_tree_sitter.misc import get_info
-
-from .._metainfo import SOURCE, project
+from make_language_server._metainfo import SOURCE, project
 
 START = " -- Macro: "
 BEGIN = "‘"

@@ -12,4 +12,4 @@ except ImportError:  # for setuptools-generate
 
 __all__ = ["__version__", "__version_tuple__"]
 
-FILETYPE = Literal["config", "make"]
+FILETYPE = Literal["config"]

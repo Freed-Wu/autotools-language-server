@@ -4,7 +4,7 @@ r"""Utils
 
 import json
 import os
-from typing import Any, Literal
+from typing import Any
 
 from tree_sitter.binding import Query
 from tree_sitter_languages import get_language
@@ -15,7 +15,7 @@ SCHEMAS = {}
 QUERIES = {}
 
 
-def get_query(name: str, filetype: FILETYPE = "make") -> Query:
+def get_query(name: str, filetype: FILETYPE = "config") -> Query:
     r"""Get query.
 
     :param name:
@@ -40,7 +40,7 @@ def get_query(name: str, filetype: FILETYPE = "make") -> Query:
     return QUERIES[name]
 
 
-def get_schema(filetype: FILETYPE) -> dict[str, Any]:
+def get_schema(filetype: FILETYPE = "config") -> dict[str, Any]:
     r"""Get schema.
 
     :param filetype:
@@ -58,19 +58,3 @@ def get_schema(filetype: FILETYPE) -> dict[str, Any]:
         with open(file) as f:
             SCHEMAS[filetype] = json.load(f)
     return SCHEMAS[filetype]
-
-
-def get_filetype(uri: str) -> FILETYPE | Literal[""]:
-    r"""Get filetype.
-
-    :param uri:
-    :type uri: str
-    :rtype: FILETYPE | Literal[""]
-    """
-    basename = os.path.basename(uri)
-    ext = uri.split(os.path.extsep)[-1]
-    if basename == "configure.ac":
-        return "config"
-    if ext == "mk" or basename.split(os.path.extsep)[0] == "Makefile":
-        return "make"
-    return ""

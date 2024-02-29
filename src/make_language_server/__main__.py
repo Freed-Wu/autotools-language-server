@@ -72,22 +72,21 @@ def main():
     from tree_sitter_languages import get_parser as _get_parser
 
     from .finders import DIAGNOSTICS_FINDER_CLASSES
-    from .utils import get_filetype
 
     parser = _get_parser("make")
     result = check(
         args.check,
         parser.parse,
         DIAGNOSTICS_FINDER_CLASSES,
-        get_filetype,
+        None,
         args.color,
     )
     if args.check:
         exit(result)
 
-    from .server import AutotoolsLanguageServer
+    from .server import MakeLanguageServer
 
-    AutotoolsLanguageServer(NAME, __version__).start_io()
+    MakeLanguageServer(NAME, __version__).start_io()
 
 
 if __name__ == "__main__":
