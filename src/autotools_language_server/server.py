@@ -5,6 +5,8 @@ r"""Server
 import re
 from typing import Any
 
+from lsp_tree_sitter.diagnose import get_diagnostics
+from lsp_tree_sitter.finders import PositionFinder
 from lsprotocol.types import (
     TEXT_DOCUMENT_COMPLETION,
     TEXT_DOCUMENT_DEFINITION,
@@ -27,8 +29,6 @@ from lsprotocol.types import (
 )
 from pygls.server import LanguageServer
 from tree_sitter_languages import get_parser
-from tree_sitter_lsp.diagnose import get_diagnostics
-from tree_sitter_lsp.finders import PositionFinder
 
 from .finders import (
     DIAGNOSTICS_FINDER_CLASSES,

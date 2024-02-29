@@ -62,14 +62,14 @@ def main():
     args = parser.parse_args()
 
     if args.generate_schema:
-        from tree_sitter_lsp.utils import pprint
+        from lsp_tree_sitter.utils import pprint
 
         from .misc import get_schema
 
         pprint(get_schema(args.generate_schema), indent=args.indent)
         exit()
+    from lsp_tree_sitter.diagnose import check
     from tree_sitter_languages import get_parser as _get_parser
-    from tree_sitter_lsp.diagnose import check
 
     from .finders import DIAGNOSTICS_FINDER_CLASSES
     from .utils import get_filetype

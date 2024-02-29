@@ -85,6 +85,10 @@ Other features:
 
 ![completion](https://github.com/SchemaStore/schemastore/assets/32936898/fa0c523d-cb51-4870-92a4-07d64c624221)
 
+## How Does It Work
+
+See [here](https://github.com/neomutt/lsp-tree-sitter#usage).
+
 Read
 [![readthedocs](https://shields.io/readthedocs/autotools-language-server)](https://autotools-language-server.readthedocs.io)
 to know more.

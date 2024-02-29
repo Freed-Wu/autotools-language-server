@@ -5,15 +5,15 @@ r"""Finders
 import os
 from dataclasses import dataclass
 
-from lsprotocol.types import DiagnosticSeverity
-from tree_sitter import Node, Tree
-from tree_sitter_languages import get_parser
-from tree_sitter_lsp import UNI
-from tree_sitter_lsp.finders import (
+from lsp_tree_sitter import UNI
+from lsp_tree_sitter.finders import (
     ErrorFinder,
     QueryFinder,
     RepeatedFinder,
 )
+from lsprotocol.types import DiagnosticSeverity
+from tree_sitter import Node, Tree
+from tree_sitter_languages import get_parser
 
 from .utils import get_query
 
