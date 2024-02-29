@@ -1,5 +1,4 @@
 #!/usr/bin/env -S pip install -r
 
+lsp-tree-sitter
 tree-sitter-languages
-# ErrorFinder
-tree-sitter-lsp >= 0.0.13

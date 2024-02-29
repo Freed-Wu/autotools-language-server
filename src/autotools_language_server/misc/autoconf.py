@@ -4,7 +4,7 @@ r"""Autoconf
 
 from typing import Any
 
-from tree_sitter_lsp.misc import get_info
+from lsp_tree_sitter.misc import get_info
 
 from .._metainfo import SOURCE, project
 
