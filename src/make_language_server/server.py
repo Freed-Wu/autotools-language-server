@@ -35,11 +35,11 @@ from .finders import (
     DefinitionFinder,
     ReferenceFinder,
 )
-from .utils import get_filetype, get_schema
+from .utils import get_schema
 
 
-class AutotoolsLanguageServer(LanguageServer):
-    r"""Autotools language server."""
+class MakeLanguageServer(LanguageServer):
+    r"""Make language server."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         r"""Init.
@@ -63,8 +63,6 @@ class AutotoolsLanguageServer(LanguageServer):
             :type params: DidChangeTextDocumentParams
             :rtype: None
             """
-            if get_filetype(params.text_document.uri) != "make":
-                return None
             document = self.workspace.get_document(params.text_document.uri)
             self.trees[document.uri] = self.parser.parse(
                 document.source.encode()
@@ -84,8 +82,6 @@ class AutotoolsLanguageServer(LanguageServer):
             :type params: TextDocumentPositionParams
             :rtype: list[Location]
             """
-            if get_filetype(params.text_document.uri) != "make":
-                return []
             document = self.workspace.get_document(params.text_document.uri)
             uni = PositionFinder(params.position).find(
                 document.uri, self.trees[document.uri]
@@ -107,8 +103,6 @@ class AutotoolsLanguageServer(LanguageServer):
             :type params: TextDocumentPositionParams
             :rtype: list[Location]
             """
-            if get_filetype(params.text_document.uri) != "make":
-                return []
             document = self.workspace.get_document(params.text_document.uri)
             uni = PositionFinder(params.position).find(
                 document.uri, self.trees[document.uri]
@@ -130,55 +124,45 @@ class AutotoolsLanguageServer(LanguageServer):
             :type params: TextDocumentPositionParams
             :rtype: Hover | None
             """
-            filetype = get_filetype(params.text_document.uri)
-            if filetype == "":
+            document = self.workspace.get_document(params.text_document.uri)
+            uni = PositionFinder(params.position).find(
+                document.uri, self.trees[document.uri]
+            )
+            if uni is None:
                 return None
-            if filetype == "make":
-                document = self.workspace.get_document(
-                    params.text_document.uri
-                )
-                uni = PositionFinder(params.position).find(
-                    document.uri, self.trees[document.uri]
-                )
-                if uni is None:
-                    return None
-                text = uni.get_text()
-                _range = uni.get_range()
-                parent = uni.node.parent
-                if parent is None:
-                    return None
-                if parent.type in [
-                    "prerequisites",
-                    "variable_reference",
-                    "arguments",
-                ]:
-                    result = "\n".join(
-                        DefinitionFinder.uni2document(uni)
-                        for uni in DefinitionFinder(uni.node).find_all(
-                            document.uri, self.trees[document.uri]
-                        )
+            text = uni.get_text()
+            _range = uni.get_range()
+            parent = uni.node.parent
+            if parent is None:
+                return None
+            if parent.type in [
+                "prerequisites",
+                "variable_reference",
+                "arguments",
+            ]:
+                result = "\n".join(
+                    DefinitionFinder.uni2document(uni)
+                    for uni in DefinitionFinder(uni.node).find_all(
+                        document.uri, self.trees[document.uri]
                     )
-                    if result != "":
-                        return Hover(
-                            MarkupContent(MarkupKind.Markdown, result),
-                            _range,
-                        )
-                if parent.type not in [
-                    "variable_reference",
-                    "function_call",
-                    "conditional",
-                    "ifneq_directive",
-                    "else_directive",
-                    "define_directive",
-                    "include_directive",
-                ]:
-                    return None
-            else:
-                text, _range = self._cursor_word(
-                    params.text_document.uri, params.position, True
                 )
+                if result != "":
+                    return Hover(
+                        MarkupContent(MarkupKind.Markdown, result),
+                        _range,
+                    )
+            if parent.type not in [
+                "variable_reference",
+                "function_call",
+                "conditional",
+                "ifneq_directive",
+                "else_directive",
+                "define_directive",
+                "include_directive",
+            ]:
+                return None
             if (
-                description := get_schema(filetype)
+                description := get_schema()
                 .get("properties", {})
                 .get(text, {})
                 .get("description")
@@ -192,13 +176,14 @@ class AutotoolsLanguageServer(LanguageServer):
         def completions(params: CompletionParams) -> CompletionList:
             r"""Completions.
 
+            .. todo::
+                Distinguish different node type without
+                ``self._cursor_word()``.
+
             :param params:
             :type params: CompletionParams
             :rtype: CompletionList
             """
-            filetype = get_filetype(params.text_document.uri)
-            if filetype == "":
-                return CompletionList(False, [])
             text, _ = self._cursor_word(
                 params.text_document.uri, params.position, False, r"[^$() ]"
             )
@@ -211,7 +196,7 @@ class AutotoolsLanguageServer(LanguageServer):
                     ),
                     insert_text=k,
                 )
-                for k, v in get_schema(filetype).get("properties", {}).items()
+                for k, v in get_schema().get("properties", {}).items()
                 if k.startswith(text)
             ]
             return CompletionList(is_incomplete=False, items=items)

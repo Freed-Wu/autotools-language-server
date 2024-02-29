@@ -3,7 +3,7 @@
 ## [AUR](https://aur.archlinux.org/packages/autotools-language-server)
 
 ```sh
-yay -S autotools-language-server
+paru -S autotools-language-server
 ```
 
 ## [NUR](https://nur.nix-community.org/repos/Freed-Wu)

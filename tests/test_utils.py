@@ -2,9 +2,9 @@ r"""Test utils"""
 
 import os
 
-from autotools_language_server.finders import DIAGNOSTICS_FINDER_CLASSES
-from autotools_language_server.utils import get_filetype, get_schema
 from lsp_tree_sitter.diagnose import check
+from make_language_server.finders import DIAGNOSTICS_FINDER_CLASSES
+from make_language_server.utils import get_schema
 from tree_sitter_languages import get_parser
 
 PATH = os.path.dirname(__file__)
@@ -23,7 +23,7 @@ class Test:
             [os.path.join(PATH, "Makefile")],
             get_parser("make").parse,
             DIAGNOSTICS_FINDER_CLASSES,
-            get_filetype,
+            None,
         )
         assert result > 0
 
@@ -33,5 +33,4 @@ class Test:
 
         :rtype: None
         """
-        assert get_schema("config")["properties"].get("AC_INIT")
-        assert get_schema("make")["properties"].get("CURDIR")
+        assert get_schema()["properties"].get("CURDIR")
