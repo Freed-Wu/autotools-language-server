@@ -13,7 +13,7 @@ from . import __name__ as NAME
 try:
     import shtab
 except ImportError:
-    import _shtab as shtab
+    from . import _shtab as shtab
 
 NAME = NAME.replace("_", "-")
 VERSION = rf"""{NAME} {__version__}
