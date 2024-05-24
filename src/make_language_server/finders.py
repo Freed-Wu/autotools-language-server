@@ -13,9 +13,8 @@ from lsp_tree_sitter.finders import (
 )
 from lsprotocol.types import DiagnosticSeverity
 from tree_sitter import Node, Tree
-from tree_sitter_languages import get_parser
 
-from .utils import get_query
+from .utils import get_query, parser
 
 
 @dataclass(init=False)
@@ -68,7 +67,6 @@ class RepeatedTargetFinder(RepeatedFinder):
 
         :rtype: None
         """
-        self.parser = get_parser("make")
 
     def is_include_node(self, node: Node) -> bool:
         r"""Is include node.
@@ -88,7 +86,7 @@ class RepeatedTargetFinder(RepeatedFinder):
         :type code: bytes
         :rtype: Tree
         """
-        return self.parser.parse(code)
+        return parser.parse(code)
 
     def filter(self, uni: UNI) -> bool:
         r"""Filter.

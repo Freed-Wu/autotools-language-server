@@ -28,14 +28,13 @@ from lsprotocol.types import (
     TextDocumentPositionParams,
 )
 from pygls.server import LanguageServer
-from tree_sitter_languages import get_parser
 
 from .finders import (
     DIAGNOSTICS_FINDER_CLASSES,
     DefinitionFinder,
     ReferenceFinder,
 )
-from .utils import get_schema
+from .utils import get_schema, parser
 
 
 class MakeLanguageServer(LanguageServer):
@@ -52,7 +51,6 @@ class MakeLanguageServer(LanguageServer):
         """
         super().__init__(*args)
         self.trees = {}
-        self.parser = get_parser("make")
 
         @self.feature(TEXT_DOCUMENT_DID_OPEN)
         @self.feature(TEXT_DOCUMENT_DID_CHANGE)
@@ -64,9 +62,7 @@ class MakeLanguageServer(LanguageServer):
             :rtype: None
             """
             document = self.workspace.get_document(params.text_document.uri)
-            self.trees[document.uri] = self.parser.parse(
-                document.source.encode()
-            )
+            self.trees[document.uri] = parser.parse(document.source.encode())
             diagnostics = get_diagnostics(
                 document.uri,
                 self.trees[document.uri],

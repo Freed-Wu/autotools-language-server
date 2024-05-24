@@ -4,8 +4,7 @@ import os
 
 from lsp_tree_sitter.diagnose import check
 from make_language_server.finders import DIAGNOSTICS_FINDER_CLASSES
-from make_language_server.utils import get_schema
-from tree_sitter_languages import get_parser
+from make_language_server.utils import get_schema, parser
 
 PATH = os.path.dirname(__file__)
 
@@ -21,7 +20,7 @@ class Test:
         """
         result = check(
             [os.path.join(PATH, "Makefile")],
-            get_parser("make").parse,
+            parser.parse,
             DIAGNOSTICS_FINDER_CLASSES,
             None,
         )

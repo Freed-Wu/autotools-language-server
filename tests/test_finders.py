@@ -4,7 +4,7 @@ import os
 
 from lsp_tree_sitter import UNI
 from make_language_server.finders import DefinitionFinder
-from tree_sitter_languages import get_parser
+from make_language_server.utils import parser
 
 PATH = os.path.dirname(__file__)
 
@@ -17,7 +17,7 @@ class Test:
         file = os.path.join(PATH, "Makefile")
         with open(file, "rb") as f:
             text = f.read()
-        tree = get_parser("make").parse(text)
+        tree = parser.parse(text)
         finder = DefinitionFinder(
             tree.root_node.children[13]
             .children[1]

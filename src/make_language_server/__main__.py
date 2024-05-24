@@ -70,14 +70,13 @@ def main() -> None:
     if args.generate_schema or args.check:
         from lsp_tree_sitter.diagnose import check
         from lsp_tree_sitter.utils import pprint
-        from tree_sitter_languages import get_parser as _get_parser
 
         from .finders import DIAGNOSTICS_FINDER_CLASSES
         from .misc import get_schema
+        from .utils import parser
 
         if args.generate_schema:
             pprint(get_schema(args.generate_schema), indent=args.indent)
-        parser = _get_parser("make")
         exit(
             check(
                 args.check,
