@@ -1,4 +1,4 @@
 #!/usr/bin/env -S pip install -r
 
-lsp-tree-sitter
+lsp-tree-sitter >= 0.0.16
 tree-sitter-make
