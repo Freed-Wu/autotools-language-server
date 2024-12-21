@@ -109,11 +109,11 @@ vim.api.nvim_create_autocmd({ "BufEnter" }, {
 ```toml
 [[language]]
 name = "autoconf"
-language-servers = [ "autoconf-language-server",]
+language-servers = ["autoconf-language-server"]
 
 [[language]]
 name = "make"
-language-servers = [ "make-language-server",]
+language-servers = ["make-language-server"]
 
 [language_server.autoconf-language-server]
 command = "autoconf-language-server"
@@ -130,11 +130,11 @@ command = "make-language-server"
 
 ```toml
 [language_server.autoconf-language-server]
-filetypes = [ "autoconf",]
+filetypes = ["autoconf"]
 command = "autoconf-language-server"
 
 [language_server.make-language-server]
-filetypes = [ "make",]
+filetypes = ["make"]
 command = "make-language-server"
 ```
 
