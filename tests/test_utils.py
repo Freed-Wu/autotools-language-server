@@ -3,6 +3,7 @@ r"""Test utils"""
 import os
 
 from lsp_tree_sitter.diagnose import check
+
 from make_language_server.finders import DIAGNOSTICS_FINDER_CLASSES
 from make_language_server.utils import get_schema, parser
 

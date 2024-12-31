@@ -3,6 +3,7 @@ r"""Test finders."""
 import os
 
 from lsp_tree_sitter import UNI
+
 from make_language_server.finders import DefinitionFinder
 from make_language_server.utils import parser
 
@@ -20,7 +21,7 @@ class Test:
         tree = parser.parse(text)
         finder = DefinitionFinder(
             tree.root_node.children[13]
-            .children[1]
+            .children[2]
             .children[0]
             .children[0]
             .children[2]
