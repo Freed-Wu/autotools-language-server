@@ -37,17 +37,20 @@ class InvalidPathFinder(QueryFinder):
         query = get_query("include")
         super().__init__(query, message, severity)
 
-    def capture2uni(self, capture: tuple[Node, str], uri: str) -> UNI | None:
+    def capture2uni(
+        self, label: str, nodes: list[Node], uri: str
+    ) -> UNI | None:
         r"""Capture2uni.
 
-        :param capture:
-        :type capture: tuple[Node, str]
+        :param label:
+        :type label: str
+        :param nodes:
+        :type nodes: list[Node]
         :param uri:
         :type uri: str
         :rtype: UNI | None
         """
-        node, label = capture
-        uni = UNI(uri, node)
+        uni = UNI(uri, nodes[0])
         return (
             uni
             if label == "path" and not os.path.isfile(uni.get_path())
