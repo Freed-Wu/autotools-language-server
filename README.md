@@ -95,4 +95,5 @@ to know more.
 
 ## Similar Projects
 
-- [cmake-language-server](https://github.com/regen100/cmake-language-server)
+- [make-lsp-server](https://github.com/alexclewontin/make-lsp-vscode/blob/master/server/package.json):
+  use regular expression, not parser.
