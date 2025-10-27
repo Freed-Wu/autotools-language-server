@@ -19,7 +19,7 @@ from lsprotocol.types import (
     Range,
     TextDocumentPositionParams,
 )
-from pygls.server import LanguageServer
+from pygls.lsp.server import LanguageServer
 
 from .utils import get_schema
 
