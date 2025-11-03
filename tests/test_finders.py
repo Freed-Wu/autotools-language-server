@@ -26,5 +26,5 @@ class Test:
             .children[0]
             .children[2]
         )
-        result = finder(UNI(file, tree.root_node.children[12].children[0]))
+        result = finder(UNI(tree.root_node.children[12].children[0], file))
         assert result is True

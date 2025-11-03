@@ -50,7 +50,7 @@ class InvalidPathFinder(QueryFinder):
         :type uri: str
         :rtype: UNI | None
         """
-        uni = UNI(uri, nodes[0])
+        uni = UNI(nodes[0], uri)
         return (
             uni if label == "path" and not os.path.isfile(uni.path) else None
         )
