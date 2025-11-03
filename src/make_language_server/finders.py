@@ -23,7 +23,7 @@ class InvalidPathFinder(QueryFinder):
 
     def __init__(
         self,
-        message: str = "{{uni.get_text()}}: no such file",
+        message: str = "{{uni.text}}: no such file",
         severity: DiagnosticSeverity = DiagnosticSeverity.Error,
     ) -> None:
         r"""Init.
@@ -52,9 +52,7 @@ class InvalidPathFinder(QueryFinder):
         """
         uni = UNI(uri, nodes[0])
         return (
-            uni
-            if label == "path" and not os.path.isfile(uni.get_path())
-            else None
+            uni if label == "path" and not os.path.isfile(uni.path) else None
         )
 
 
@@ -62,7 +60,7 @@ class InvalidPathFinder(QueryFinder):
 class RepeatedTargetFinder(RepeatedFinder):
     r"""Repeatedtargetfinder."""
 
-    message: str = "{{uni.get_text()}}: is repeated on {{_uni}}"
+    message: str = "{{uni.text}}: is repeated on {{_uni}}"
     severity: DiagnosticSeverity = DiagnosticSeverity.Warning
 
     def __post_init__(self) -> None:
@@ -99,7 +97,7 @@ class RepeatedTargetFinder(RepeatedFinder):
         :rtype: bool
         """
         if parent := uni.node.parent:
-            text = uni.get_text()
+            text = uni.text
             return (
                 uni.node.type == "word"
                 and parent.type == "targets"
@@ -153,7 +151,7 @@ class DefinitionFinder(RepeatedTargetFinder):
             return False
         return (
             parent.type == "define_directive"
-            and uni.get_text() == self.name
+            and uni.text == self.name
             and node == parent.children[1]
         )
 
@@ -170,7 +168,7 @@ class DefinitionFinder(RepeatedTargetFinder):
             return False
         return (
             parent.type == "variable_assignment"
-            and uni.get_text() == self.name
+            and uni.text == self.name
             and node == parent.children[0]
         )
 
@@ -185,7 +183,7 @@ class DefinitionFinder(RepeatedTargetFinder):
         parent = node.parent
         if parent is None:
             return False
-        return parent.type == "targets" and uni.get_text() == self.name
+        return parent.type == "targets" and uni.text == self.name
 
     def __call__(self, uni: UNI) -> bool:
         r"""Call.
@@ -271,7 +269,7 @@ class ReferenceFinder(RepeatedTargetFinder):
         if parent is None:
             return False
         return (
-            uni.get_text() == self.name
+            uni.text == self.name
             and node.type == "word"
             and (
                 parent.type == "variable_reference"
@@ -292,7 +290,7 @@ class ReferenceFinder(RepeatedTargetFinder):
         parent = node.parent
         if parent is None:
             return False
-        return parent.type == "targets" and uni.get_text() == self.name
+        return parent.type == "targets" and uni.text == self.name
 
     def __call__(self, uni: UNI) -> bool:
         r"""Call.

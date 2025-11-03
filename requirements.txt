@@ -1,5 +1,5 @@
 #!/usr/bin/env -S pip install -r
 
-lsp-tree-sitter >= 0.0.16
+lsp-tree-sitter >= 0.1.0
 pygls >= 2.0.0
 tree-sitter-make

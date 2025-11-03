@@ -95,7 +95,7 @@ class MakeLanguageServer(LanguageServer):
             if uni is None:
                 return []
             return [
-                uni.get_location()
+                uni.location
                 for uni in DefinitionFinder(uni.node).find_all(
                     document.uri, self.trees[document.uri]
                 )
@@ -118,7 +118,7 @@ class MakeLanguageServer(LanguageServer):
             if uni is None:
                 return []
             return [
-                uni.get_location()
+                uni.location
                 for uni in ReferenceFinder(uni.node).find_all(
                     document.uri, self.trees[document.uri]
                 )
@@ -140,8 +140,8 @@ class MakeLanguageServer(LanguageServer):
             )
             if uni is None:
                 return None
-            text = uni.get_text()
-            _range = uni.get_range()
+            text = uni.text
+            _range = uni.range
             parent = uni.node.parent
             if parent is None:
                 return None
