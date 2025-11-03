@@ -119,7 +119,7 @@ class DefinitionFinder(RepeatedTargetFinder):
         :rtype: None
         """
         super().__init__()
-        self.name = UNI.node2text(node)
+        self.name = UNI(node).text
         parent = node.parent
         if parent is None:
             raise TypeError
@@ -127,7 +127,7 @@ class DefinitionFinder(RepeatedTargetFinder):
         if parent.type == "arguments":
             self.is_define = self.is_function_define
             # https://github.com/alemuller/tree-sitter-make/issues/8
-            self.name = UNI.node2text(node).split(",")[0]
+            self.name = UNI(node).text.split(",")[0]
         elif node.type == "word" and (
             parent.type == "variable_reference"
             or parent.parent is not None
@@ -212,7 +212,7 @@ class DefinitionFinder(RepeatedTargetFinder):
                 raise TypeError
         return f"""<{uni.uri}>
 ```make
-{UNI.node2text(parent)}
+{UNI(parent).text}
 ```"""
 
 
@@ -228,7 +228,7 @@ class ReferenceFinder(RepeatedTargetFinder):
         :rtype: None
         """
         super().__init__()
-        self.name = UNI.node2text(node)
+        self.name = UNI(node).text
         parent = node.parent
         if parent is None:
             raise TypeError
@@ -254,7 +254,7 @@ class ReferenceFinder(RepeatedTargetFinder):
         return (
             parent.type == "arguments"
             # https://github.com/alemuller/tree-sitter-make/issues/8
-            and self.name in UNI.node2text(node).split(",")
+            and self.name in UNI(node).text.split(",")
         )
 
     def is_variable_reference(self, uni: UNI) -> bool:
