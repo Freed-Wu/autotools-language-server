@@ -94,7 +94,7 @@ class AutoconfLanguageServer(LanguageServer):
         :type position: Position
         :rtype: str
         """
-        document = self.workspace.get_document(uri)
+        document = self.workspace.get_text_document(uri)
         return document.source.splitlines()[position.line]
 
     def _cursor_word(

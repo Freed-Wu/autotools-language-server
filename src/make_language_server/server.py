@@ -24,6 +24,7 @@ from lsprotocol.types import (
     MarkupContent,
     MarkupKind,
     Position,
+    PublishDiagnosticsParams,
     Range,
     TextDocumentPositionParams,
 )
@@ -61,14 +62,21 @@ class MakeLanguageServer(LanguageServer):
             :type params: DidChangeTextDocumentParams
             :rtype: None
             """
-            document = self.workspace.get_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             self.trees[document.uri] = parser.parse(document.source.encode())
             diagnostics = get_diagnostics(
                 document.uri,
                 self.trees[document.uri],
                 DIAGNOSTICS_FINDER_CLASSES,
             )
-            self.publish_diagnostics(params.text_document.uri, diagnostics)
+            self.text_document_publish_diagnostics(
+                PublishDiagnosticsParams(
+                    params.text_document.uri,
+                    diagnostics,
+                )
+            )
 
         @self.feature(TEXT_DOCUMENT_DEFINITION)
         def definition(params: TextDocumentPositionParams) -> list[Location]:
@@ -78,7 +86,9 @@ class MakeLanguageServer(LanguageServer):
             :type params: TextDocumentPositionParams
             :rtype: list[Location]
             """
-            document = self.workspace.get_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             uni = PositionFinder(params.position).find(
                 document.uri, self.trees[document.uri]
             )
@@ -99,7 +109,9 @@ class MakeLanguageServer(LanguageServer):
             :type params: TextDocumentPositionParams
             :rtype: list[Location]
             """
-            document = self.workspace.get_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             uni = PositionFinder(params.position).find(
                 document.uri, self.trees[document.uri]
             )
@@ -120,7 +132,9 @@ class MakeLanguageServer(LanguageServer):
             :type params: TextDocumentPositionParams
             :rtype: Hover | None
             """
-            document = self.workspace.get_document(params.text_document.uri)
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
             uni = PositionFinder(params.position).find(
                 document.uri, self.trees[document.uri]
             )
@@ -206,7 +220,7 @@ class MakeLanguageServer(LanguageServer):
         :type position: Position
         :rtype: str
         """
-        document = self.workspace.get_document(uri)
+        document = self.workspace.get_text_document(uri)
         return document.source.splitlines()[position.line]
 
     def _cursor_word(
