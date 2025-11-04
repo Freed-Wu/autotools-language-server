@@ -3,12 +3,13 @@ r"""Configure the Sphinx documentation builder.
 https://www.sphinx-doc.org/en/master/usage/configuration.html
 """
 
-from make_language_server import __version__ as version  # type: ignore
 from make_language_server._metainfo import (  # type: ignore
     author,
     copyright,
     project,
 )
+
+from make_language_server import __version__ as version  # type: ignore
 
 __all__ = ["version", "author", "copyright", "project"]
 
