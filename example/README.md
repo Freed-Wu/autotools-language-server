@@ -13,6 +13,7 @@ This is the top-level Makefile from the Linux kernel (v6.18-rc5). It's a complex
 The language server successfully parses the file but reports several issues:
 
 1. **Parser Limitations**: The tree-sitter parser has difficulty with advanced Make syntax, particularly:
+
    - Conditional variable names: `stackp-flags-$(CONFIG_STACKPROTECTOR) := ...`
    - Dynamic include directives: `include-$(CONFIG_DEBUG_INFO) += ...`
    - Complex function syntax with operators
@@ -22,13 +23,15 @@ The language server successfully parses the file but reports several issues:
 3. **Missing Dependencies**: One error about missing `include/config/auto.conf.cmd`, which is expected since we don't have the full kernel build tree.
 
 **Statistics:**
+
 - Size: ~70KB
-- ~2,100 lines
+- \~2,100 lines
 - Includes advanced Make features: pattern rules, functions, conditionals, includes
 
 ### test.mk (Simple Example)
 
 A simple, clean Makefile that demonstrates basic features:
+
 - Variable assignments
 - Pattern rules
 - PHONY targets
@@ -48,6 +51,7 @@ autotools-language-server --check example/test.mk
 ## Observations
 
 The Linux kernel Makefile is an excellent stress test because it:
+
 - Uses nearly every Make feature
 - Has complex conditional logic
 - Includes dynamic variable and target names
