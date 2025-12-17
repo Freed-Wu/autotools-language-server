@@ -418,7 +418,11 @@ class DocumentSymbolFinder:
                     kind = SymbolKind.Variable
 
                 # Get the name text
-                name = matching_name.text.decode("utf-8") if matching_name.text else ""
+                name = (
+                    matching_name.text.decode("utf-8")
+                    if matching_name.text
+                    else ""
+                )
 
                 # Skip special targets (like .PHONY)
                 if name.startswith(".") and name.isupper():

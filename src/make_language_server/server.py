@@ -146,7 +146,9 @@ class MakeLanguageServer(LanguageServer):
             )
             if document.uri not in self.trees:
                 # Parse the document if not already parsed
-                self.trees[document.uri] = parser.parse(document.source.encode())
+                self.trees[document.uri] = parser.parse(
+                    document.source.encode()
+                )
             return DocumentSymbolFinder().find_all(
                 document.uri, self.trees[document.uri]
             )
