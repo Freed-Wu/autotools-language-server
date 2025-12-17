@@ -4,6 +4,7 @@ r"""Finders
 
 import os
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from lsp_tree_sitter import UNI
 from lsp_tree_sitter.finders import (
@@ -11,10 +12,17 @@ from lsp_tree_sitter.finders import (
     QueryFinder,
     RepeatedFinder,
 )
-from lsprotocol.types import DiagnosticSeverity
+from lsprotocol.types import (
+    DiagnosticSeverity,
+    DocumentSymbol,
+    SymbolKind,
+)
 from tree_sitter import Node, Tree
 
 from .utils import get_query, parser
+
+if TYPE_CHECKING:
+    from lsprotocol.types import Range
 
 
 @dataclass(init=False)
@@ -307,3 +315,121 @@ DIAGNOSTICS_FINDER_CLASSES = [
     InvalidPathFinder,
     RepeatedTargetFinder,
 ]
+
+
+def _node_to_range(node: Node, uri: str) -> "Range":
+    r"""Convert tree-sitter node to LSP Range.
+
+    :param node:
+    :type node: Node
+    :param uri:
+    :type uri: str
+    :rtype: Range
+    """
+    from lsprotocol.types import Position, Range
+
+    return Range(
+        start=Position(
+            line=node.start_point[0],
+            character=node.start_point[1],
+        ),
+        end=Position(
+            line=node.end_point[0],
+            character=node.end_point[1],
+        ),
+    )
+
+
+class DocumentSymbolFinder:
+    r"""Finder for document symbols (targets, variables, functions)."""
+
+    def __init__(self) -> None:
+        r"""Init."""
+        from tree_sitter import QueryCursor
+
+        self.query = get_query("symbols")
+        self.cursor = QueryCursor(self.query)
+
+    @staticmethod
+    def _is_descendant_of(node: Node, container: Node) -> bool:
+        r"""Check if node is a descendant of container.
+
+        :param node:
+        :type node: Node
+        :param container:
+        :type container: Node
+        :rtype: bool
+        """
+        current = node
+        while current is not None:
+            if current.id == container.id:
+                return True
+            current = current.parent
+        return False
+
+    def find_all(self, uri: str, tree: Tree) -> list[DocumentSymbol]:
+        r"""Find all document symbols in the tree.
+
+        :param uri:
+        :type uri: str
+        :param tree:
+        :type tree: Tree
+        :rtype: list[DocumentSymbol]
+        """
+        symbols: list[DocumentSymbol] = []
+        captures = self.cursor.captures(tree.root_node)
+
+        # Collect containers and names separately
+        containers: dict[str, list[Node]] = {}
+        names: dict[str, list[Node]] = {}
+
+        for capture_name, nodes in captures.items():
+            if "." in capture_name:
+                # This is a name capture like "target.name"
+                names[capture_name] = nodes
+            else:
+                # This is a container capture like "target", "variable", "function"
+                containers[capture_name] = nodes
+
+        # Match each container with its corresponding name
+        for symbol_type, container_nodes in containers.items():
+            name_key = f"{symbol_type}.name"
+            name_nodes = names.get(name_key, [])
+
+            for container in container_nodes:
+                # Find the name node that belongs to this container
+                matching_name = None
+                for name_node in name_nodes:
+                    if self._is_descendant_of(name_node, container):
+                        matching_name = name_node
+                        break
+
+                if matching_name is None:
+                    continue
+
+                # Determine symbol kind based on type
+                if symbol_type == "target":
+                    kind = SymbolKind.Function
+                elif symbol_type == "variable":
+                    kind = SymbolKind.Variable
+                elif symbol_type == "function":
+                    kind = SymbolKind.Function
+                else:
+                    kind = SymbolKind.Variable
+
+                # Get the name text
+                name = matching_name.text.decode("utf-8") if matching_name.text else ""
+
+                # Skip special targets (like .PHONY)
+                if name.startswith(".") and name.isupper():
+                    continue
+
+                symbol = DocumentSymbol(
+                    name=name,
+                    kind=kind,
+                    range=_node_to_range(container, uri),
+                    selection_range=_node_to_range(matching_name, uri),
+                )
+                symbols.append(symbol)
+
+        return symbols

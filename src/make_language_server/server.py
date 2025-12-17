@@ -12,6 +12,7 @@ from lsprotocol.types import (
     TEXT_DOCUMENT_DEFINITION,
     TEXT_DOCUMENT_DID_CHANGE,
     TEXT_DOCUMENT_DID_OPEN,
+    TEXT_DOCUMENT_DOCUMENT_SYMBOL,
     TEXT_DOCUMENT_HOVER,
     TEXT_DOCUMENT_REFERENCES,
     CompletionItem,
@@ -19,6 +20,8 @@ from lsprotocol.types import (
     CompletionList,
     CompletionParams,
     DidChangeTextDocumentParams,
+    DocumentSymbol,
+    DocumentSymbolParams,
     Hover,
     Location,
     MarkupContent,
@@ -33,6 +36,7 @@ from pygls.lsp.server import LanguageServer
 from .finders import (
     DIAGNOSTICS_FINDER_CLASSES,
     DefinitionFinder,
+    DocumentSymbolFinder,
     ReferenceFinder,
 )
 from .utils import get_schema, parser
@@ -123,6 +127,29 @@ class MakeLanguageServer(LanguageServer):
                     document.uri, self.trees[document.uri]
                 )
             ]
+
+        @self.feature(TEXT_DOCUMENT_DOCUMENT_SYMBOL)
+        def document_symbol(
+            params: DocumentSymbolParams,
+        ) -> list[DocumentSymbol]:
+            r"""Get document symbols.
+
+            Returns all symbols (targets, variables, functions) defined in
+            the document.
+
+            :param params:
+            :type params: DocumentSymbolParams
+            :rtype: list[DocumentSymbol]
+            """
+            document = self.workspace.get_text_document(
+                params.text_document.uri
+            )
+            if document.uri not in self.trees:
+                # Parse the document if not already parsed
+                self.trees[document.uri] = parser.parse(document.source.encode())
+            return DocumentSymbolFinder().find_all(
+                document.uri, self.trees[document.uri]
+            )
 
         @self.feature(TEXT_DOCUMENT_HOVER)
         def hover(params: TextDocumentPositionParams) -> Hover | None:
