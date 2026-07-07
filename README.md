@@ -97,3 +97,5 @@ to know more.
 
 - [make-lsp-server](https://github.com/alexclewontin/make-lsp-vscode/blob/master/server/package.json):
   use regular expression, not parser.
+- [make-ls](https://github.com/owenrumney/make-ls): written in Go, with better
+  performance.
