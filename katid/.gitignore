@@ -1,0 +1,5 @@
+/kati/
+
+build/
+.xmake/
+.cache/
