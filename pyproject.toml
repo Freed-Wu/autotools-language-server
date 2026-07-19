@@ -1,13 +1,16 @@
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
 [project]
 name = "autotools-language-server"
-version = "0.1.0"
+version = "0.1.1"
 description = "Language server for configure.ac"
 readme = "README.md"
 # type_a | type_b
 requires-python = ">= 3.10"
 license = "GPL-3.0-or-later"
 keywords = ["autotools", "language server"]
+dependencies = [
+    "pygls>=2",
+]
 
 [[project.authors]]
 name = "Wu, Zhenyu"
@@ -21,6 +24,11 @@ Source = "https://github.com/Freed-Wu/autotools-language-server"
 
 [project.scripts]
 autotools-language-server = "autotools_language_server.__main__:main"
+
+[project.optional-dependencies]
+dev = [
+    "lsp-tree-sitter>=0.2.3",
+]
 
 [build-system]
 requires = ["uv_build<0.12"]
