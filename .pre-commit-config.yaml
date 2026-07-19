@@ -1,5 +1,5 @@
 ---
-exclude: ^templates/|\.json$
+exclude: ^template(s)?/
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -79,11 +79,11 @@ repos:
     hooks:
       - id: ruff-check
       - id: ruff-format
-#   - repo: https://github.com/astral-sh/ty-pre-commit
-#     rev: v0.0.56
-#     hooks:
-#       - id: ty
-#
+  # - repo: https://github.com/astral-sh/ty-pre-commit
+  #   rev: v0.0.56
+  #   hooks:
+  #     - id: ty
+
 # ci:
 #   skip:
 #     - ty

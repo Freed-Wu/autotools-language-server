@@ -2,6 +2,8 @@ r"""Server
 ==========
 """
 
+import json
+import os
 import re
 from typing import Any
 
@@ -21,7 +23,10 @@ from lsprotocol.types import (
 )
 from pygls.lsp.server import LanguageServer
 
-from .utils import get_schema
+with open(
+    os.path.join(os.path.dirname(__file__), "assets", "json", "config.json")
+) as f:
+    schema = json.load(f)
 
 
 class AutoconfLanguageServer(LanguageServer):
@@ -50,7 +55,7 @@ class AutoconfLanguageServer(LanguageServer):
                 params.text_document.uri, params.position, True
             )
             if (
-                description := get_schema()
+                description := schema
                 .get("properties", {})
                 .get(text, {})
                 .get("description")
@@ -80,7 +85,7 @@ class AutoconfLanguageServer(LanguageServer):
                     ),
                     insert_text=k,
                 )
-                for k, v in get_schema().get("properties", {}).items()
+                for k, v in schema.get("properties", {}).items()
                 if k.startswith(text)
             ]
             return CompletionList(is_incomplete=False, items=items)

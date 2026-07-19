@@ -40,58 +40,7 @@
 Language server for
 [autotools](https://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html).
 
-Supports:
-
-- `configure.ac`: [autoconf](https://www.gnu.org/software/autoconf)
-- `Makefile.am`: [automake](https://www.gnu.org/software/automake)
-- `Makefile`: [make](https://www.gnu.org/software/make)
-
-Features:
-
-- [x] [Goto Definition](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_definition)
-  - [x] function
-  - [x] variable
-  - [x] target
-- [x] [Find References](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_references)
-  - [x] function
-  - [x] variable
-  - [x] target
-- [x] [Diagnostic](https://microsoft.github.io/language-server-protocol/specifications/specification-current#diagnostic)
-- [ ] [Document Formatting](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_formatting)
-- [x] [Hover](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_hover)
-  - [x] definition
-  - [x] document
-- [x] [Completion](https://microsoft.github.io/language-server-protocol/specifications/specification-current#textDocument_completion)
-  - [ ] definition
-  - [x] document
-
-Other features:
-
-- [x] [pre-commit-hooks](https://pre-commit.com/)
-  - [x] linter
-  - [ ] formatter
-
-## Screenshots
-
-### Diagnostic
-
-![diagnostic](https://github.com/Freed-Wu/autotools-language-server/assets/32936898/a1b35e66-7046-42e0-8db8-b636e711764d)
-
-### Hover
-
-![document hover](https://github.com/Freed-Wu/autotools-language-server/assets/32936898/c39c08fd-3c8e-474d-99f4-e9f919f4da37)
-
-### Completion
-
 ![completion](https://github.com/SchemaStore/schemastore/assets/32936898/fa0c523d-cb51-4870-92a4-07d64c624221)
-
-## How Does It Work
-
-See [lsp-tree-sitter](https://github.com/neomutt/lsp-tree-sitter#usage).
-
-Read
-[![readthedocs](https://shields.io/readthedocs/autotools-language-server)](https://autotools-language-server.readthedocs.io)
-to know more.
 
 ## Similar Projects
 

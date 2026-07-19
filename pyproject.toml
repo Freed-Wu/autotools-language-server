@@ -1,97 +1,43 @@
-[build-system]
-requires = ["setuptools_scm[toml] >= 6.2", "setuptools-generate >= 0.0.6"]
-build-backend = "setuptools.build_meta"
-
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
 [project]
 name = "autotools-language-server"
-description = "Language server for makefile and configure.ac"
+version = "0.1.0"
+description = "Language server for configure.ac"
 readme = "README.md"
 # type_a | type_b
 requires-python = ">= 3.10"
+license = "GPL-3.0-or-later"
 keywords = ["autotools", "language server"]
-classifiers = [
-  "Development Status :: 3 - Alpha",
-  "Intended Audience :: Developers",
-  "Topic :: Software Development :: Build Tools",
-  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-  "Operating System :: Microsoft :: Windows",
-  "Operating System :: POSIX",
-  "Operating System :: Unix",
-  "Operating System :: MacOS",
-  "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: Implementation :: CPython",
-  "Programming Language :: Python :: Implementation :: PyPy",
-]
-dynamic = ["version", "dependencies", "optional-dependencies"]
 
 [[project.authors]]
 name = "Wu, Zhenyu"
 email = "wuzhenyu@ustc.edu"
 
-[project.license]
-text = "GPL v3"
-
 [project.urls]
-Homepage = "https://autotools-language-server.readthedocs.io"
-Download = "https://github.com/Freed-Wu/autotools-language-server/releases"
 "Bug Report" = "https://github.com/Freed-Wu/autotools-language-server/issues"
+Download = "https://github.com/Freed-Wu/autotools-language-server/releases"
+Homepage = "https://autotools-language-server.readthedocs.io"
 Source = "https://github.com/Freed-Wu/autotools-language-server"
 
 [project.scripts]
-make-language-server = "make_language_server.__main__:main"
-autoconf-language-server = "make_language_server.__main__:main"
-autotools-language-server = "make_language_server.__main__:main"
+autotools-language-server = "autotools_language_server.__main__:main"
 
-[tool.setuptools.data-files]
-"share/man/man1" = [
-  "sdist/make-language-server.1",
-  "sdist/autoconf-language-server.1",
-  "sdist/autotools-language-server.1",
+[build-system]
+requires = ["uv_build<0.12"]
+build-backend = "uv_build"
+
+[tool.coverage.report]
+exclude_lines = [
+  "if TYPE_CHECKING:",
+  "if __name__ == .__main__.:",
+  "\\s*import tomli as tomllib",
 ]
-"share/bash-completion/completions" = [
-  "sdist/make-language-server",
-  "sdist/autoconf-language-server",
-  "sdist/autotools-language-server",
-]
-"share/zsh/site-functions" = [
-  "sdist/_make-language-server",
-  "sdist/_autoconf-language-server",
-  "sdist/_autotools-language-server",
-]
-
-[tool.setuptools.dynamic.dependencies]
-file = "requirements.txt"
-
-# begin: scripts/update-pyproject.toml.pl
-[tool.setuptools.dynamic.optional-dependencies.colorize]
-file = "requirements/colorize.txt"
-
-[tool.setuptools.dynamic.optional-dependencies.dev]
-file = "requirements/dev.txt"
-
-[tool.setuptools.dynamic.optional-dependencies.misc]
-file = "requirements/misc.txt"
-# end: scripts/update-pyproject.toml.pl
-
-[tool.setuptools_scm]
-write_to = "src/make_language_server/_version.py"
-
-[tool.setuptools-generate]
-write-to = "src/make_language_server/_metainfo.py"
-
-[tool.setuptools-generate.metainfo-template]
-file = "templates/metainfo.py.j2"
-
-[tool.mdformat]
-number = true
 
 [tool.doq]
 template_path = "templates"
+
+[tool.mdformat]
+number = true
 
 [tool.ruff]
 line-length = 79
@@ -117,10 +63,3 @@ preview = true
 [tool.ruff.format]
 docstring-code-format = true
 preview = true
-
-[tool.coverage.report]
-exclude_lines = [
-  "if TYPE_CHECKING:",
-  "if __name__ == .__main__.:",
-  "\\s*import tomli as tomllib",
-]
