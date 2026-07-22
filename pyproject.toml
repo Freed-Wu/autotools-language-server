@@ -1,7 +1,7 @@
 # https://setuptools.pypa.io/en/latest/userguide/pyproject_config.html
 [project]
 name = "autotools-language-server"
-version = "0.1.1"
+version = "0.1.2"
 description = "Language server for configure.ac"
 readme = "README.md"
 # type_a | type_b
@@ -9,7 +9,8 @@ requires-python = ">= 3.10"
 license = "GPL-3.0-or-later"
 keywords = ["autotools", "language server"]
 dependencies = [
-    "pygls>=2",
+    "lsp-tree-sitter>=0.2.9",
+    "tree-sitter-autoconf>=0.0.1",
 ]
 
 [[project.authors]]
@@ -27,7 +28,7 @@ autotools-language-server = "autotools_language_server.__main__:main"
 
 [project.optional-dependencies]
 dev = [
-    "lsp-tree-sitter>=0.2.3",
+    "pytest-cov>=7.1.0",
 ]
 
 [build-system]

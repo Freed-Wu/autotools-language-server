@@ -2,15 +2,19 @@ r"""This module can be called by
 `python -m <https://docs.python.org/3/library/__main__.html>`_.
 """
 
-from . import __name__ as NAME
+from lsp_tree_sitter.__main__ import get_parser
+
 from . import __version__
 
 
-def main() -> None:
-    r"""Parse arguments and provide shell completions."""
-    from .server import AutoconfLanguageServer
+def main():
+    parser = get_parser(__version__)
+    args = parser.parse_args()
 
-    AutoconfLanguageServer(NAME, __version__).start_io()
+    from .server import AutoconfLanguageServer as Server
+
+    server = Server(version=__version__)
+    server.run(args)
 
 
 if __name__ == "__main__":

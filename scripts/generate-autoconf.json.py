@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import json
+
 from lsp_tree_sitter.misc import get_info
 
 SOURCE = "https://github.com/Freed-Wu/autotools-language-server"
@@ -120,4 +122,4 @@ for line in _lines:
     lastline = line
 for k, v in macros.items():
     schema["properties"][k] = {"description": v}
-print(schema)
+print(json.dumps(schema))
