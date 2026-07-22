@@ -9,5 +9,5 @@ file = os.path.join(os.path.dirname(__file__), "zathurarc")
 class Test:
     @staticmethod
     def test_complete() -> None:
-        contents = server.lookup("macro_name", "AC_INIT")["AC_INIT"]
+        contents = server.lookup("AC_INIT", kind="macro_name")["AC_INIT"]
         assert len(contents)
