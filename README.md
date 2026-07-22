@@ -39,6 +39,7 @@
 
 Language server for
 [autotools](https://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html).
+Refer [lsp-tree-sitter](https://github.com/neomutt/lsp-tree-sitter).
 
 ![completion](https://github.com/SchemaStore/schemastore/assets/32936898/fa0c523d-cb51-4870-92a4-07d64c624221)
 
