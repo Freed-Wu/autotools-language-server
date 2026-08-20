@@ -1,6 +1,5 @@
 # autotools-language-server
 
-[![readthedocs](https://shields.io/readthedocs/autotools-language-server)](https://autotools-language-server.readthedocs.io)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/Freed-Wu/autotools-language-server/main.svg)](https://results.pre-commit.ci/latest/github/Freed-Wu/autotools-language-server/main)
 [![github/workflow](https://github.com/Freed-Wu/autotools-language-server/actions/workflows/main.yml/badge.svg)](https://github.com/Freed-Wu/autotools-language-server/actions)
 [![codecov](https://codecov.io/gh/Freed-Wu/autotools-language-server/branch/main/graph/badge.svg)](https://codecov.io/gh/Freed-Wu/autotools-language-server)
@@ -39,7 +38,6 @@
 
 Language server for
 [autotools](https://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html).
-Refer [lsp-tree-sitter](https://github.com/neomutt/lsp-tree-sitter).
 
 ![completion](https://github.com/SchemaStore/schemastore/assets/32936898/fa0c523d-cb51-4870-92a4-07d64c624221)
 
