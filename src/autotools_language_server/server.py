@@ -5,6 +5,7 @@ r"""Server
 import os
 
 from lsp_tree_sitter.completer import SchemaCompleter
+from lsprotocol.types import TextDocumentSyncKind
 from lsp_tree_sitter.server import TreeSitterLanguageServer
 from tree_sitter import Language, Parser
 from tree_sitter_autoconf import language as get_language_ptr
@@ -21,6 +22,8 @@ class AutoconfLanguageServer(TreeSitterLanguageServer):
         schema_file = os.path.join(assets_path, "json", "autoconf.json")
         schema_completer = SchemaCompleter.from_files(code_file, schema_file)
 
+        # incremental sync may corrupt trees in lsp-tree-sitter
+        kwargs.setdefault("text_document_sync_kind", TextDocumentSyncKind.Full)
         super().__init__(
             parser,
             (),
